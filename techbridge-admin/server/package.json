@@ -8,7 +8,8 @@
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
     "seed": "node src/seeders/index.js",
-    "db:check": "node src/scripts/checkDb.js"
+    "db:check": "node src/scripts/checkDb.js",
+    "db:indexes": "node src/scripts/syncIndexes.js"
   },
   "keywords": [],
   "author": "",
