@@ -4,4 +4,6 @@ export default {
   transform: {},
   testMatch: ['**/tests/**/*.test.js'],
   clearMocks: true,
+  // The first run downloads a MongoDB binary for the in-memory test database
+  testTimeout: 120000,
 };
