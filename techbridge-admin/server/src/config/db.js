@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import env from './env.js';
 import logger from './logger.js';
+import dns from 'node:dns';
 
 mongoose.set('strictQuery', true);
 
@@ -44,6 +45,13 @@ export async function supportsTransactions() {
 
 export async function connectDB() {
   attachConnectionListeners();
+
+  // Some ISPs/routers refuse the SRV lookups that mongodb+srv:// needs; use public DNS instead
+  if (env.DNS_SERVERS) {
+    const servers = env.DNS_SERVERS.split(',').map((server) => server.trim()).filter(Boolean);
+    dns.setServers(servers);
+    logger.info(`Using DNS servers: ${servers.join(', ')}`);
+  }
 
   try {
     await mongoose.connect(env.MONGODB_URI, { serverSelectionTimeoutMS: 10000 });

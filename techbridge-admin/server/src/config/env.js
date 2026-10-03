@@ -42,6 +42,9 @@ const envSchema = z.object({
       'MONGODB_URI must start with mongodb:// or mongodb+srv://'
     ),
 
+      // Optional: comma-separated DNS servers, e.g. "8.8.8.8,1.1.1.1" (fixes querySrv errors on some ISPs)
+  DNS_SERVERS: optionalText,
+  
   // Auth
   JWT_SECRET: z
     .string()
