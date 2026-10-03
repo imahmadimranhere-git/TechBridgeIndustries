@@ -9,7 +9,9 @@
     "start": "node src/server.js",
     "seed": "node src/seeders/index.js",
     "db:check": "node src/scripts/checkDb.js",
-    "db:indexes": "node src/scripts/syncIndexes.js"
+    "db:indexes": "node src/scripts/syncIndexes.js",
+    "seed:demo": "node src/seeders/index.js --demo",
+    "seed:fresh": "node src/seeders/index.js --fresh"
   },
   "keywords": [],
   "author": "",
