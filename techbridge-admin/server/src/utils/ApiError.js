@@ -1,10 +1,11 @@
 // An error we throw on purpose; the error handler turns it into a clean JSON response
 export default class ApiError extends Error {
-  constructor(statusCode, message, errors = undefined) {
+  constructor(statusCode, message, errors = undefined, meta = undefined) {
     super(message);
     this.name = 'ApiError';
     this.statusCode = statusCode;
     this.errors = errors;
+    this.meta = meta;
     this.isOperational = true;
   }
 
@@ -24,7 +25,12 @@ export default class ApiError extends Error {
     return new ApiError(404, message);
   }
 
-  static conflict(message = 'This record conflicts with an existing one') {
-    return new ApiError(409, message);
+  static conflict(message = 'This record conflicts with an existing one', errors) {
+    return new ApiError(409, message, errors);
+  }
+
+  // The browser should show a confirm dialog and resend with confirmOverpay: true
+  static needsConfirmation(message, meta = {}) {
+    return new ApiError(409, message, undefined, { requiresConfirmation: true, ...meta });
   }
 }

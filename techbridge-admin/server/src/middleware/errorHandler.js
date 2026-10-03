@@ -71,6 +71,7 @@ export function errorHandler(err, req, res, next) {
         : (known?.message ?? err.message ?? 'Something went wrong'),
     errors: known?.errors ?? {},
   };
+    if (known?.meta) body.meta = known.meta;
   if (isServerError && !env.isProduction) body.stack = err.stack;
 
   return res.status(status).json(body);

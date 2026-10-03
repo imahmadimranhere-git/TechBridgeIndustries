@@ -2,7 +2,13 @@ import { Router } from 'express';
 import { health } from '../controllers/publicController.js';
 import { requireAuth } from '../middleware/auth.js';
 import authRoutes from './authRoutes.js';
+import clientRoutes from './clientRoutes.js';
+import dealRoutes from './dealRoutes.js';
+import noteRoutes from './noteRoutes.js';
+import paymentRoutes from './paymentRoutes.js';
+import payoutRoutes from './payoutRoutes.js';
 import publicRoutes from './publicRoutes.js';
+import staffRoutes from './staffRoutes.js';
 
 const router = Router();
 
@@ -15,8 +21,13 @@ router.use('/public', publicRoutes);
 const adminRouter = Router();
 adminRouter.use(requireAuth);
 
-// Phase 9 registers every module here, e.g.:
-// adminRouter.use('/clients', clientRoutes);
+adminRouter.use('/clients', clientRoutes);
+adminRouter.use('/staff', staffRoutes);
+adminRouter.use('/payouts', payoutRoutes);
+adminRouter.use('/deals', dealRoutes);
+adminRouter.use('/payments', paymentRoutes);
+adminRouter.use('/notes', noteRoutes);
+// Phase 9B: invoices, dashboard, reports, users, profile, settings
 
 router.use(adminRouter);
 

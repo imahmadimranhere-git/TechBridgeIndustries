@@ -3,6 +3,7 @@ import { isValid, parseISO } from 'date-fns';
 import { z } from 'zod';
 import { DATE_RANGES } from '../utils/dateRanges.js';
 import { toMinor } from '../utils/money.js';
+import { COMMISSION_TYPE } from '../config/constants.js';
 
 /* Reusable Zod building blocks shared by every module's validators */
 
@@ -86,3 +87,44 @@ export const dateRangeQuery = z.object({
   from: z.string().trim().optional(),
   to: z.string().trim().optional(),
 });
+
+
+/* ---------- Query helpers: empty strings from the browser mean "no filter" ---------- */
+
+export const optionalEnum = (values) => z.preprocess(blankToUndefined, z.enum(values).optional());
+
+export const optionalId = (label = 'Id') => z.preprocess(blankToUndefined, objectId(label).optional());
+
+/**
+ * Staff and deal commission.
+ * percentage: stays a number (12.5 means 12.5%)
+ * fixed:      typed in rupees, stored in paisa
+ * When commissionType is missing (deal without an override) the data is returned untouched.
+ */
+export function parseCommission(data, ctx) {
+  if (data.commissionType === undefined) return data;
+  const raw = data.commissionRate ?? 0;
+
+  if (data.commissionType === COMMISSION_TYPE.FIXED) {
+    try {
+      const minor = toMinor(raw);
+      if (minor < 0) throw new Error('negative');
+      return { ...data, commissionRate: minor };
+    } catch {
+      ctx.addIssue({ code: 'custom', path: ['commissionRate'], message: 'Fixed commission must be a valid amount' });
+      return z.NEVER;
+    }
+  }
+
+  const percent = Number(raw);
+  const twoDecimals = Math.abs(percent * 100 - Math.round(percent * 100)) < 1e-6;
+  if (!Number.isFinite(percent) || percent < 0 || percent > 100 || !twoDecimals) {
+    ctx.addIssue({
+      code: 'custom',
+      path: ['commissionRate'],
+      message: 'Percentage must be between 0 and 100 (max 2 decimals)',
+    });
+    return z.NEVER;
+  }
+  return { ...data, commissionRate: percent };
+}

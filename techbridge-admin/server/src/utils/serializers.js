@@ -16,3 +16,10 @@ export function serializeUser(user) {
     createdAt: user.createdAt,
   };
 }
+
+
+// Lean invoice objects don't have virtuals, so add the balance by hand
+export function withInvoiceBalance(invoice) {
+  if (!invoice) return invoice;
+  return { ...invoice, balanceDue: Math.max((invoice.total ?? 0) - (invoice.amountPaid ?? 0), 0) };
+}

@@ -1,12 +1,12 @@
 import mongoose from 'mongoose';
-import { MongoMemoryServer } from 'mongodb-memory-server';
+import { MongoMemoryReplSet } from 'mongodb-memory-server';
 
-let server;
+let replSet;
 
-// Starts a throwaway in-memory MongoDB; real data in Atlas is never touched
+// A throwaway single-node replica set (transactions need one); Atlas data is never touched
 export async function startTestDb() {
-  server = await MongoMemoryServer.create();
-  await mongoose.connect(server.getUri(), { dbName: 'techbridge-test' });
+  replSet = await MongoMemoryReplSet.create({ replSet: { count: 1, storageEngine: 'wiredTiger' } });
+  await mongoose.connect(replSet.getUri(), { dbName: 'techbridge-test' });
 }
 
 export async function clearTestDb() {
@@ -16,5 +16,5 @@ export async function clearTestDb() {
 
 export async function stopTestDb() {
   await mongoose.disconnect();
-  if (server) await server.stop();
+  if (replSet) await replSet.stop();
 }
