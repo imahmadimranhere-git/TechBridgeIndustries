@@ -1,0 +1,60 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/forms";
+
+/*
+ * Design tokens. Every token becomes utilities automatically:
+ *   --color-brand        -> bg-brand, text-brand, border-brand, ring-brand
+ *   --color-brand-50     -> bg-brand-50 ...
+ *   --color-success-soft -> bg-success-soft ...
+ */
+@theme {
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, "Segoe UI", Roboto, Arial, sans-serif;
+
+  /* Brand: defaults only. SettingsContext overrides --color-brand at runtime. */
+  --color-brand: #1d4ed8;
+  --color-brand-secondary: #0f172a;
+  --color-brand-contrast: #ffffff;
+  --color-brand-50: color-mix(in oklab, var(--color-brand) 6%, white);
+  --color-brand-100: color-mix(in oklab, var(--color-brand) 12%, white);
+  --color-brand-200: color-mix(in oklab, var(--color-brand) 25%, white);
+  --color-brand-600: color-mix(in oklab, var(--color-brand) 88%, black);
+  --color-brand-700: color-mix(in oklab, var(--color-brand) 75%, black);
+
+  /* Status colours: badges, stamps and the dashboard cards */
+  --color-success: #16a34a;
+  --color-success-soft: #dcfce7;
+  --color-warning: #ea580c;
+  --color-warning-soft: #ffedd5;
+  --color-danger: #dc2626;
+  --color-danger-soft: #fee2e2;
+  --color-info: #2563eb;
+  --color-info-soft: #dbeafe;
+  --color-neutral: #6b7280;
+  --color-neutral-soft: #f3f4f6;
+  --color-purple: #7c3aed;
+  --color-purple-soft: #ede9fe;
+}
+
+@layer base {
+  html {
+    @apply bg-gray-50 text-gray-900 antialiased;
+  }
+
+  body {
+    @apply min-h-screen;
+  }
+}
+
+/* Only for patterns repeated everywhere; everything else lives in components */
+@layer components {
+  .card {
+    @apply rounded-2xl border border-gray-200/70 bg-white shadow-sm;
+  }
+
+  .input-base {
+    @apply block w-full rounded-lg border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm
+      placeholder:text-gray-400
+      focus:border-brand focus:ring-2 focus:ring-brand/30
+      disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500;
+  }
+}

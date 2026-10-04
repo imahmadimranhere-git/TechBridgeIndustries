@@ -1,7 +1,15 @@
-import react from '@vitejs/plugin-react'
-import { defineConfig } from 'vite'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
 
-// https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
-})
+  plugins: [react(), tailwindcss()],
+  server: {
+    port: 5173,
+    // Fail loudly instead of silently moving to 5174 (the server only trusts FRONTEND_URL)
+    strictPort: true,
+  },
+  preview: {
+    port: 4173,
+  },
+});
