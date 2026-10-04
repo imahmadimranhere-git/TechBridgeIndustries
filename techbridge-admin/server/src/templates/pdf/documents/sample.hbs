@@ -1,0 +1,44 @@
+<div class="doc-title">
+  <h1>{{title}}</h1>
+  <div class="doc-number">Generated {{date generatedAt "dd MMM yyyy, hh:mm a"}}</div>
+</div>
+
+<div class="meta-grid">
+  <div class="panel">
+    <div class="panel__label">What this checks</div>
+    <div>Logo or text logo, company details, brand colors, embedded font, money formatting, footer, QR code and page numbers.</div>
+  </div>
+  <div class="panel panel--soft">
+    <div class="panel__label">Currency glyphs</div>
+    <div class="bold">{{money 12500000}} · ₨ 125,000 · $ 1,500 · € 99 · £ 45</div>
+  </div>
+</div>
+
+<h2 class="section-title">Sample line items</h2>
+<table class="data">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Description</th>
+      <th class="num">Qty</th>
+      <th class="num">Rate</th>
+      <th class="num">Amount</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each items}}
+      <tr>
+        <td>{{inc @index}}</td>
+        <td>{{description}}</td>
+        <td class="num">{{qty}}</td>
+        <td class="num">{{money rate}}</td>
+        <td class="num">{{money amount}}</td>
+      </tr>
+    {{/each}}
+  </tbody>
+</table>
+
+<table class="totals avoid-break">
+  <tr><td>Subtotal</td><td class="amount">{{money subtotal}}</td></tr>
+  <tr class="grand"><td>Total</td><td class="amount">{{money total}}</td></tr>
+</table>

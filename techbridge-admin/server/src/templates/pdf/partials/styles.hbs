@@ -1,0 +1,100 @@
+:root {
+  --brand: {{branding.colors.primary}};
+  --brand-2: {{branding.colors.secondary}};
+  --brand-soft: color-mix(in srgb, var(--brand) 8%, white);
+  --text: #111827;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --zebra: #f8fafc;
+  --success: #15803d;
+  --warning: #c2410c;
+  --danger: #b91c1c;
+  --info: #1d4ed8;
+  --neutral: #6b7280;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+body {
+  margin: 0;
+  font-family: 'DocFont', 'Noto Sans', 'Segoe UI', Arial, sans-serif;
+  font-size: 10pt;
+  line-height: 1.5;
+  color: var(--text);
+}
+
+h1, h2, h3 { margin: 0; color: var(--brand); line-height: 1.25; }
+p { margin: 0 0 8px; }
+
+/* ---------- Header ---------- */
+.doc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  padding-bottom: 12px;
+  margin-bottom: 18px;
+  border-bottom: 3px solid var(--brand);
+}
+.doc-header__logo img { max-height: 60px; max-width: 210px; object-fit: contain; }
+.text-logo { display: flex; align-items: center; gap: 10px; }
+.text-logo__badge {
+  width: 42px; height: 42px; border-radius: 10px;
+  background: var(--brand); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 13pt; letter-spacing: 0.5px;
+}
+.text-logo__name { font-size: 15pt; font-weight: 700; color: var(--brand); }
+.doc-header__company { text-align: right; font-size: 8.5pt; color: var(--muted); line-height: 1.45; }
+.doc-header__company .company-name { font-size: 12pt; font-weight: 700; color: var(--text); }
+.doc-header__company .tagline { font-style: italic; }
+
+/* ---------- Title & panels ---------- */
+.doc-title { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 16px; }
+.doc-title h1 { font-size: 20pt; letter-spacing: 1px; text-transform: uppercase; }
+.doc-title .doc-number { font-size: 10pt; color: var(--muted); text-align: right; }
+
+.meta-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 16px; }
+.panel { border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; }
+.panel--soft { background: var(--brand-soft); border-color: transparent; }
+.panel__label {
+  font-size: 7.5pt; font-weight: 700; letter-spacing: 0.6px;
+  text-transform: uppercase; color: var(--brand); margin-bottom: 4px;
+}
+.section-title { font-size: 10.5pt; margin: 18px 0 6px; }
+
+/* ---------- Tables ---------- */
+table.data { width: 100%; border-collapse: collapse; margin: 8px 0 16px; font-size: 9pt; }
+table.data th {
+  background: var(--brand); color: #fff; font-weight: 700;
+  text-align: left; padding: 7px 8px; font-size: 8.5pt;
+}
+table.data td { padding: 6px 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
+table.data tbody tr:nth-child(even) td { background: var(--zebra); }
+table.data tr { break-inside: avoid; page-break-inside: avoid; }
+table.data th.num, .num, .amount { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+.totals { margin-left: auto; width: 46%; border-collapse: collapse; font-size: 9.5pt; }
+.totals td { padding: 5px 8px; }
+.totals tr.grand td {
+  border-top: 2px solid var(--brand);
+  font-weight: 700; font-size: 11pt; color: var(--brand);
+}
+
+/* ---------- Small utilities ---------- */
+.muted { color: var(--muted); }
+.small { font-size: 8pt; }
+.bold { font-weight: 700; }
+.avoid-break { break-inside: avoid; page-break-inside: avoid; }
+
+.badge {
+  display: inline-block; padding: 1px 8px; border-radius: 999px;
+  font-size: 7.5pt; font-weight: 700; letter-spacing: 0.4px; text-transform: uppercase;
+  border: 1px solid currentColor;
+}
+.badge--success { color: var(--success); }
+.badge--warning { color: var(--warning); }
+.badge--danger { color: var(--danger); }
+.badge--info { color: var(--info); }
+.badge--neutral { color: var(--neutral); }

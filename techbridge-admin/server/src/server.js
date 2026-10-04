@@ -1,10 +1,11 @@
+import { closeBrowser } from './services/PdfService.js';
 import createApp from './app.js';
 import env from './config/env.js';
 import logger from './config/logger.js';
 import { connectDB, disconnectDB } from './config/db.js';
 
 // Extra cleanup added by later phases (cron jobs in Phase 14, Puppeteer browser in Phase 10)
-const shutdownTasks = [];
+const shutdownTasks = [closeBrowser];
 
 async function start() {
   await connectDB();

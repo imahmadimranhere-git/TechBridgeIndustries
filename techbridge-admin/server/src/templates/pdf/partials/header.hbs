@@ -1,0 +1,19 @@
+<header class="doc-header">
+  <div class="doc-header__logo">
+    {{#if branding.logoDataUri}}
+      <img src="{{branding.logoDataUri}}" alt="{{branding.company.name}}">
+    {{else}}
+      <div class="text-logo">
+        <div class="text-logo__badge">{{branding.initials}}</div>
+        <div class="text-logo__name">{{branding.company.name}}</div>
+      </div>
+    {{/if}}
+  </div>
+
+  <div class="doc-header__company">
+    <div class="company-name">{{branding.company.name}}</div>
+    {{#if branding.company.tagline}}<div class="tagline">{{branding.company.tagline}}</div>{{/if}}
+    {{#if branding.company.addressLine}}<div>{{branding.company.addressLine}}</div>{{/if}}
+    {{#if branding.contactLine}}<div>{{branding.contactLine}}</div>{{/if}}
+  </div>
+</header>
