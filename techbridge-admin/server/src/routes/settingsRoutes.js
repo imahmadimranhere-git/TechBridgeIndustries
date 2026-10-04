@@ -4,6 +4,8 @@ import * as controller from '../controllers/settingsController.js';
 import { uploadImage } from '../middleware/upload.js';
 import { validate } from '../middleware/validate.js';
 import { settingsUpdateSchema } from '../validators/settingsValidators.js';
+import * as email from '../controllers/emailController.js';
+import { testEmailSchema } from '../validators/emailValidators.js';
 
 const router = Router();
 
@@ -14,5 +16,7 @@ router.post('/logo', uploadImage(UPLOAD_FOLDERS.BRANDING), controller.uploadLogo
 router.delete('/logo', controller.removeLogo);
 router.post('/stamp', uploadImage(UPLOAD_FOLDERS.STAMPS), controller.uploadStamp);
 router.delete('/stamp', controller.removeStamp);
+
+router.post('/test-email', validate({ body: testEmailSchema }), email.test);
 
 export default router;

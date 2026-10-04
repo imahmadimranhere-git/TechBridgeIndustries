@@ -155,7 +155,7 @@ export async function receiptPdf(paymentId, user) {
       }),
   });
 
-  return { ...result, filename: `Receipt-${receiptNumber}.pdf`, record: payment };
+  return { ...result, filename: `Receipt-${receiptNumber}.pdf`, record: payment, number: receiptNumber };
 }
 
 /* ------------------------------------------------------------------ */
@@ -319,7 +319,7 @@ export async function payoutSlipPdf(payoutId, user) {
       }),
   });
 
-  return { ...result, filename: `Payout-${slipNumber}.pdf`, record: payout };
+    return { ...result, filename: `Payout-${slipNumber}.pdf`, record: payout, number: slipNumber };
 }
 
 /* ------------------------------------------------------------------ */

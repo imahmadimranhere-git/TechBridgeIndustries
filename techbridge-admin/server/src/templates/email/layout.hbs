@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{subject}}</title>
+</head>
+<body style="margin:0; padding:0; background:#f3f4f6;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f3f4f6;">
+    <tr>
+      <td align="center" style="padding:24px 12px;">
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:100%; max-width:600px; background:#ffffff; border-radius:12px; overflow:hidden; font-family:'Segoe UI', Arial, sans-serif; color:#111827;">
+          <tr>
+            <td style="height:5px; line-height:5px; font-size:0; background:{{branding.colors.primary}};">&nbsp;</td>
+          </tr>
+          <tr>
+            <td style="padding:22px 28px 8px;">
+              {{#if branding.logoDataUri}}
+                <img src="{{{branding.logoDataUri}}}" alt="{{branding.company.name}}" style="display:block; max-height:48px; max-width:200px; border:0;">
+              {{else}}
+                <table role="presentation" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <td style="width:40px; height:40px; border-radius:8px; background:{{branding.colors.primary}}; color:#ffffff; font-size:14px; font-weight:700; text-align:center; vertical-align:middle;">{{branding.initials}}</td>
+                    <td style="padding-left:10px; font-size:18px; font-weight:700; color:{{branding.colors.primary}};">{{branding.company.name}}</td>
+                  </tr>
+                </table>
+              {{/if}}
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:8px 28px 26px; font-size:14px; line-height:1.6;">
+              {{{body}}}
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:16px 28px; background:#f9fafb; border-top:1px solid #e5e7eb; font-size:12px; line-height:1.6; color:#6b7280;">
+              <strong style="color:#111827;">{{branding.company.name}}</strong><br>
+              {{#if branding.company.addressLine}}{{branding.company.addressLine}}<br>{{/if}}
+              {{#if branding.contactLine}}{{branding.contactLine}}<br>{{/if}}
+              {{branding.footerText}}
+            </td>
+          </tr>
+        </table>
+        <div style="padding-top:10px; font-family:Arial, sans-serif; font-size:11px; color:#9ca3af;">&copy; {{year}} {{branding.company.name}}</div>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

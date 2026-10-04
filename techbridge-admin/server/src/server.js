@@ -3,9 +3,10 @@ import createApp from './app.js';
 import env from './config/env.js';
 import logger from './config/logger.js';
 import { connectDB, disconnectDB } from './config/db.js';
+import { closeMail } from './services/MailService.js';
 
 // Extra cleanup added by later phases (cron jobs in Phase 14, Puppeteer browser in Phase 10)
-const shutdownTasks = [closeBrowser];
+const shutdownTasks = [closeBrowser, closeMail];
 
 async function start() {
   await connectDB();

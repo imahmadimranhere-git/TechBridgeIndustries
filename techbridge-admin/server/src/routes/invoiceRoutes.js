@@ -5,6 +5,8 @@ import { idParams } from '../validators/common.js';
 import { invoiceBodySchema, invoiceListQuery } from '../validators/invoiceValidators.js';
 import * as documents from '../controllers/documentController.js';
 import { pdfQuery } from '../validators/documentValidators.js';
+import * as email from '../controllers/emailController.js';
+import { emailSendSchema } from '../validators/emailValidators.js';
 const router = Router();
 
 router.get('/', validate({ query: invoiceListQuery }), controller.list);
@@ -15,5 +17,6 @@ router.delete('/:id', validate({ params: idParams }), controller.remove);
 router.post('/:id/duplicate', validate({ params: idParams }), controller.duplicate);
 router.post('/:id/mark-sent', validate({ params: idParams }), controller.markSent);
 router.get('/:id/pdf', validate({ params: idParams, query: pdfQuery }), documents.invoicePdf);
+router.post('/:id/email', validate({ params: idParams, body: emailSendSchema }), email.invoice);
 
 export default router;
