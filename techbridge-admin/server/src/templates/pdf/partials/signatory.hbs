@@ -1,0 +1,21 @@
+{{#if signatory}}
+<section class="signatory avoid-break">
+  <div class="signatory__box">
+    {{#if signatory.stampDataUri}}
+      <img class="signatory__stamp" src="{{signatory.stampDataUri}}" alt="">
+    {{/if}}
+
+    <div class="signatory__signature">
+      {{#if signatory.signatureDataUri}}
+        <img src="{{signatory.signatureDataUri}}" alt="Signature">
+      {{/if}}
+    </div>
+
+    <div class="signatory__line"></div>
+    {{#if signatory.name}}<div class="signatory__name">{{signatory.name}}</div>{{/if}}
+    {{#if signatory.designation}}<div class="signatory__designation">{{signatory.designation}}</div>{{/if}}
+    <div class="signatory__company">{{signatory.companyName}}</div>
+    <div class="signatory__label">{{signatory.label}} &middot; {{date signatory.date}}</div>
+  </div>
+</section>
+{{/if}}

@@ -1,5 +1,17 @@
+import { iconSvg } from './icons.js';
 import { format, isValid } from 'date-fns';
 import { formatMoney, formatPercent } from '../utils/money.js';
+
+
+// Which colour each rubber stamp gets. Statuses not listed (e.g. Sent) get no stamp.
+const STAMP_TONES = {
+  Paid: 'success',
+  Received: 'success',
+  'Partially Paid': 'warning',
+  Overdue: 'danger',
+  Completed: 'info',
+  Cancelled: 'neutral',
+};
 
 /**
  * Small functions usable inside .hbs templates, e.g.
@@ -33,4 +45,14 @@ export function registerHelpers(hbs) {
     'nl2br',
     (text) => new hbs.SafeString(hbs.Utils.escapeExpression(text ?? '').replace(/\r?\n/g, '<br>'))
   );
+
+    // {{icon "mail"}} or {{icon "phone" size=8 color=branding.colors.primary}}
+  hbs.registerHelper(
+    'icon',
+    (name, options) =>
+      new hbs.SafeString(iconSvg(name, { size: options?.hash?.size, color: options?.hash?.color }))
+  );
+
+  hbs.registerHelper('stampTone', (status) => STAMP_TONES[status] ?? '');
+
 }

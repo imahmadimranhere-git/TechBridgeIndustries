@@ -1,35 +1,85 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import logger from '../config/logger.js';
-import { SRC_ROOT } from '../config/paths.js';
+import { SERVER_ROOT, SRC_ROOT } from '../config/paths.js';
 import { resolveUploadPath } from '../middleware/upload.js';
 import { fileToDataUri } from '../utils/dataUri.js';
 import { getSettings } from './SettingsService.js';
 
-const FONT_DIR = path.join(SRC_ROOT, 'fonts');
-const FONT_FILES = [
+/*
+ * PDF font, in order of preference:
+ *  1. TTF files placed by hand in src/fonts (full Noto Sans)
+ *  2. The @fontsource/noto-sans npm package (latin + latin-ext subsets, includes the Rs sign)
+ *  3. System fonts (a warning is logged)
+ */
+const TTF_DIR = path.join(SRC_ROOT, 'fonts');
+const TTF_FILES = [
   { file: 'NotoSans-Regular.ttf', weight: 400 },
   { file: 'NotoSans-Bold.ttf', weight: 700 },
 ];
+
+const FONTSOURCE_DIR = path.join(SERVER_ROOT, 'node_modules', '@fontsource', 'noto-sans', 'files');
+const FONTSOURCE_SUBSETS = [
+  {
+    subset: 'latin',
+    range:
+      'U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD',
+  },
+  {
+    subset: 'latin-ext',
+    range:
+      'U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF',
+  },
+];
+const FONT_WEIGHTS = [400, 700];
 
 let fontCssPromise = null;
 // Uploaded files have random names, so a path never points to different content: safe to cache
 const imageCache = new Map();
 
-async function buildFontCss() {
+const fontFace = ({ weight, mime, format, data, range }) =>
+  `@font-face{font-family:'DocFont';font-style:normal;font-weight:${weight};` +
+  `src:url(data:${mime};base64,${data.toString('base64')}) format('${format}');` +
+  `${range ? `unicode-range:${range};` : ''}}`;
+
+async function ttfFontCss() {
   const faces = [];
-  for (const { file, weight } of FONT_FILES) {
-    try {
-      const data = await fs.readFile(path.join(FONT_DIR, file));
-      faces.push(
-        `@font-face{font-family:'DocFont';font-style:normal;font-weight:${weight};` +
-          `src:url(data:font/ttf;base64,${data.toString('base64')}) format('truetype');}`
-      );
-    } catch {
-      logger.warn(`PDF font missing: src/fonts/${file} (falling back to system fonts)`);
+  for (const { file, weight } of TTF_FILES) {
+    const data = await fs.readFile(path.join(TTF_DIR, file)).catch(() => null);
+    if (!data) return null; // need both files
+    faces.push(fontFace({ weight, mime: 'font/ttf', format: 'truetype', data }));
+  }
+  return faces.join('\n');
+}
+
+async function fontsourceCss() {
+  const faces = [];
+  for (const { subset, range } of FONTSOURCE_SUBSETS) {
+    for (const weight of FONT_WEIGHTS) {
+      const file = path.join(FONTSOURCE_DIR, `noto-sans-${subset}-${weight}-normal.woff2`);
+      const data = await fs.readFile(file).catch(() => null);
+      if (!data) return null;
+      faces.push(fontFace({ weight, mime: 'font/woff2', format: 'woff2', data, range }));
     }
   }
   return faces.join('\n');
+}
+
+async function buildFontCss() {
+  const fromTtf = await ttfFontCss();
+  if (fromTtf) {
+    logger.info('PDF font: Noto Sans (src/fonts)');
+    return fromTtf;
+  }
+
+  const fromPackage = await fontsourceCss();
+  if (fromPackage) {
+    logger.info('PDF font: Noto Sans (@fontsource/noto-sans)');
+    return fromPackage;
+  }
+
+  logger.warn('PDF font missing: run "npm install @fontsource/noto-sans" (falling back to system fonts)');
+  return '';
 }
 
 /** @font-face rules with the font embedded (read from disk only once) */

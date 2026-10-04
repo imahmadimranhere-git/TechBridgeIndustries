@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+  <defs>
+    <path id="stamp-top" d="M 30,100 A 70,70 0 1,1 170,100"/>
+    <path id="stamp-bottom" d="M 20,100 A 80,80 0 0,0 180,100"/>
+  </defs>
+  <g transform="rotate(-8 100 100)" opacity="0.85">
+    <g fill="none" stroke="#1d4ed8">
+      <circle cx="100" cy="100" r="95" stroke-width="3.5"/>
+      <circle cx="100" cy="100" r="88" stroke-width="1.2"/>
+      <circle cx="100" cy="100" r="58" stroke-width="1.2"/>
+    </g>
+    <g fill="#1d4ed8" font-family="Arial, Helvetica, sans-serif" font-weight="700">
+      <text font-size="14.5" letter-spacing="1.5" text-anchor="middle">
+        <textPath href="#stamp-top" startOffset="50%">TECHBRIDGEINDUSTRIES</textPath>
+      </text>
+      <text font-size="11.0" letter-spacing="1.2" text-anchor="middle">
+        <textPath href="#stamp-bottom" startOffset="50%">LAHORE • PAKISTAN</textPath>
+      </text>
+      <circle cx="25" cy="100" r="3"/>
+      <circle cx="175" cy="100" r="3"/>
+      <polygon points="100.00,76.00 105.88,91.91 122.83,92.58 109.51,103.09 114.11,119.42 100.00,110.00 85.89,119.42 90.49,103.09 77.17,92.58 94.12,91.91"/>
+    </g>
+  </g>
+</svg>

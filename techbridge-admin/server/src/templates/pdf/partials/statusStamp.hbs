@@ -1,0 +1,9 @@
+{{#if (eq status "Draft")}}
+  <div class="draft-watermark">DRAFT</div>
+{{else}}
+  {{#with (stampTone status) as |tone|}}
+    <div class="status-stamp status-stamp--{{tone}}{{#if ../inline}} status-stamp--inline{{/if}}">
+      <span>{{upper ../status}}</span>
+    </div>
+  {{/with}}
+{{/if}}

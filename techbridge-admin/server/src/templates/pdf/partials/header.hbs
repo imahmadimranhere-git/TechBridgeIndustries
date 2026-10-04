@@ -13,7 +13,19 @@
   <div class="doc-header__company">
     <div class="company-name">{{branding.company.name}}</div>
     {{#if branding.company.tagline}}<div class="tagline">{{branding.company.tagline}}</div>{{/if}}
-    {{#if branding.company.addressLine}}<div>{{branding.company.addressLine}}</div>{{/if}}
-    {{#if branding.contactLine}}<div>{{branding.contactLine}}</div>{{/if}}
+    <div class="contact-list">
+      {{#if branding.company.addressLine}}
+        <div class="contact-item">{{icon "map-pin"}}<span>{{branding.company.addressLine}}</span></div>
+      {{/if}}
+      {{#if branding.company.phone}}
+        <div class="contact-item">{{icon "phone"}}<span>{{branding.company.phone}}</span></div>
+      {{/if}}
+      {{#if branding.company.email}}
+        <div class="contact-item">{{icon "mail"}}<span>{{branding.company.email}}</span></div>
+      {{/if}}
+      {{#if branding.company.website}}
+        <div class="contact-item">{{icon "globe"}}<span>{{branding.company.website}}</span></div>
+      {{/if}}
+    </div>
   </div>
 </header>

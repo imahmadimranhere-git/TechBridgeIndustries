@@ -1,3 +1,5 @@
+{{> statusStamp status=status}}
+
 <div class="doc-title">
   <h1>{{title}}</h1>
   <div class="doc-number">Generated {{date generatedAt "dd MMM yyyy, hh:mm a"}}</div>
@@ -5,12 +7,13 @@
 
 <div class="meta-grid">
   <div class="panel">
-    <div class="panel__label">What this checks</div>
-    <div>Logo or text logo, company details, brand colors, embedded font, money formatting, footer, QR code and page numbers.</div>
+    <div class="panel__label">{{icon "file-text"}} What this checks</div>
+    <div>Header icons, company stamp, signatory block, status stamp, footer, QR code and page numbers.</div>
   </div>
   <div class="panel panel--soft">
-    <div class="panel__label">Currency glyphs</div>
-    <div class="bold">{{money 12500000}} · ₨ 125,000 · $ 1,500 · € 99 · £ 45</div>
+    <div class="panel__label">{{icon "check-circle"}} Currency glyphs</div>
+    <div class="bold">{{money 12500000}} &middot; &#8360; 125,000 &middot; $ 1,500 &middot; &euro; 99 &middot; &pound; 45</div>
+    <div class="small muted" style="margin-top:4px;">Inline stamp: {{> statusStamp status="Completed" inline=true}}</div>
   </div>
 </div>
 
@@ -42,3 +45,5 @@
   <tr><td>Subtotal</td><td class="amount">{{money subtotal}}</td></tr>
   <tr class="grand"><td>Total</td><td class="amount">{{money total}}</td></tr>
 </table>
+
+{{> signatory}}
