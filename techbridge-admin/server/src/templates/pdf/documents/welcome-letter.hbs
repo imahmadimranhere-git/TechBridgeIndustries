@@ -1,0 +1,55 @@
+<div class="letter-meta">
+  <div>
+    <div class="panel__label">{{icon "user"}} To</div>
+    {{> partyDetails party=client}}
+  </div>
+  <div style="text-align:right;">
+    <div class="panel__label">{{icon "calendar"}} Date</div>
+    <div class="bold">{{date letterDate "dd MMMM yyyy"}}</div>
+  </div>
+</div>
+
+<h1 class="letter-title">Welcome to {{branding.company.name}}</h1>
+
+<div class="letter">
+  {{#each paragraphs}}
+    <p>{{{this}}}</p>
+  {{/each}}
+</div>
+
+{{#if services.length}}
+  <h2 class="section-title">Our services</h2>
+  <ul class="services">
+    {{#each services}}
+      <li>{{icon "check-circle"}}<span>{{this}}</span></li>
+    {{/each}}
+  </ul>
+{{/if}}
+
+<div class="grid-2">
+  {{#if deal}}
+    <div class="panel avoid-break">
+      <div class="panel__label">{{icon "file-text"}} Project summary</div>
+      <table class="kv">
+        <tr><td>Project</td><td>{{deal.title}}</td></tr>
+        <tr><td>Agreed amount</td><td>{{money deal.dealAmount}}</td></tr>
+        <tr><td>Start date</td><td>{{date deal.startDate}}</td></tr>
+        {{#if deal.deadline}}<tr><td>Target date</td><td>{{date deal.deadline}}</td></tr>{{/if}}
+      </table>
+    </div>
+  {{/if}}
+
+  <div class="panel panel--soft avoid-break">
+    <div class="panel__label">{{icon "phone"}} Your point of contact</div>
+    {{#if contact}}
+      <div class="bold">{{contact.name}}</div>
+      {{#if contact.designation}}<div>{{contact.designation}}</div>{{/if}}
+    {{/if}}
+    {{#if branding.company.phone}}<div class="muted">{{branding.company.phone}}</div>{{/if}}
+    {{#if branding.company.email}}<div class="muted">{{branding.company.email}}</div>{{/if}}
+  </div>
+</div>
+
+<div style="margin-top:12px;">{{> bankDetails}}</div>
+
+{{> signatory}}

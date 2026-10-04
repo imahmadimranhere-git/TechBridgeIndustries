@@ -1,0 +1,53 @@
+{{> statusStamp status="Paid"}}
+
+<div class="doc-title">
+  <h1>Commission Payout Slip</h1>
+  <div class="doc-number">
+    <div class="bold" style="font-size:13pt; color:var(--text);">{{slipNumber}}</div>
+    <div>{{icon "calendar"}} {{date payout.date}}</div>
+  </div>
+</div>
+
+<div class="amount-hero avoid-break">
+  <div class="amount-hero__label">Commission paid</div>
+  <div class="amount-hero__value">{{money payout.amount}}</div>
+  <div class="muted">via {{payout.method}}{{#if payout.reference}} &middot; Ref {{payout.reference}}{{/if}}</div>
+</div>
+
+<div class="meta-grid">
+  <div class="panel">
+    <div class="panel__label">{{icon "user"}} Paid to</div>
+    {{#if staff}}
+      <div class="bold">{{staff.name}}</div>
+      {{#if staff.phone}}<div class="muted">{{staff.phone}}</div>{{/if}}
+      {{#if staff.email}}<div class="muted">{{staff.email}}</div>{{/if}}
+      {{#if staff.cnic}}<div class="muted">CNIC {{staff.cnic}}</div>{{/if}}
+    {{else}}
+      <div class="muted">Record not available</div>
+    {{/if}}
+  </div>
+  <div class="panel panel--soft">
+    <table class="kv">
+      <tr><td>Slip number</td><td>{{slipNumber}}</td></tr>
+      <tr><td>Payout date</td><td>{{date payout.date}}</td></tr>
+      <tr><td>Method</td><td>{{payout.method}}</td></tr>
+      {{#if payout.reference}}<tr><td>Reference</td><td>{{payout.reference}}</td></tr>{{/if}}
+    </table>
+  </div>
+</div>
+
+<h2 class="section-title">Commission summary (as of today)</h2>
+<div class="stat-grid">
+  <div class="stat stat--info"><div class="stat__label">Total earned</div><div class="stat__value">{{money summary.commissionEarned}}</div></div>
+  <div class="stat stat--success"><div class="stat__label">Total paid</div><div class="stat__value">{{money summary.commissionPaid}}</div></div>
+  <div class="stat stat--warning"><div class="stat__label">Pending</div><div class="stat__value">{{money summary.commissionPending}}</div></div>
+</div>
+
+{{#if payout.note}}
+  <div class="panel avoid-break">
+    <div class="panel__label">Note</div>
+    <div class="text-box">{{nl2br payout.note}}</div>
+  </div>
+{{/if}}
+
+{{> signatory}}

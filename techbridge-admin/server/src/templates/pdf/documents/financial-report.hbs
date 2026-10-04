@@ -1,0 +1,104 @@
+<div class="doc-title">
+  <h1>Financial Report</h1>
+  <div class="doc-number">
+    <div class="bold" style="font-size:12pt; color:var(--text);">{{report.period.label}}</div>
+    <div>Generated {{date generatedAt "dd MMM yyyy, hh:mm a"}}</div>
+  </div>
+</div>
+
+<h2 class="section-title">Summary</h2>
+<div class="stat-grid stat-grid--4">
+  {{#each report.summaryRows}}
+    <div class="stat stat--{{key}}">
+      <div class="stat__label">{{label}}</div>
+      <div class="stat__value">{{money amount}}</div>
+    </div>
+  {{/each}}
+</div>
+
+<h2 class="section-title">Client-wise</h2>
+<table class="data data--compact">
+  <thead>
+    <tr>
+      <th>Client</th>
+      <th>Company</th>
+      <th class="num">Deals</th>
+      <th class="num">Total deal</th>
+      <th class="num">Received</th>
+      <th class="num">Remaining</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each report.clients}}
+      <tr>
+        <td>{{client.name}}</td>
+        <td>{{client.companyName}}</td>
+        <td class="num">{{dealsCount}}</td>
+        <td class="num">{{money totalDealValue}}</td>
+        <td class="num">{{money received}}</td>
+        <td class="num">{{money remaining}}</td>
+      </tr>
+    {{else}}
+      <tr><td colspan="6" class="muted">No clients</td></tr>
+    {{/each}}
+  </tbody>
+</table>
+
+<h2 class="section-title">Deal-wise</h2>
+<table class="data data--compact">
+  <thead>
+    <tr>
+      <th>Deal</th>
+      <th>Client</th>
+      <th>Staff</th>
+      <th class="num">Amount</th>
+      <th class="num">Received *</th>
+      <th class="num">Remaining</th>
+      <th class="num">Commission *</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each report.deals}}
+      <tr>
+        <td>{{title}}{{#if (eq status "Cancelled")}} <span class="muted">(cancelled)</span>{{/if}}</td>
+        <td>{{client.name}}</td>
+        <td>{{staff.name}}</td>
+        <td class="num">{{money dealAmount}}</td>
+        <td class="num">{{money receivedInPeriod}}</td>
+        <td class="num">{{money remaining}}</td>
+        <td class="num">{{money commissionEarnedInPeriod}}</td>
+      </tr>
+    {{else}}
+      <tr><td colspan="7" class="muted">No deals in this period</td></tr>
+    {{/each}}
+  </tbody>
+</table>
+<div class="footnote">* Within the selected period. Remaining is the balance at the end of the period.</div>
+
+<h2 class="section-title">Staff-wise</h2>
+<table class="data data--compact">
+  <thead>
+    <tr>
+      <th>Staff</th>
+      <th class="num">Deals</th>
+      <th class="num">Earned</th>
+      <th class="num">Paid</th>
+      <th class="num">Pending</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each report.staff}}
+      <tr>
+        <td>{{staff.name}}</td>
+        <td class="num">{{dealsCount}}</td>
+        <td class="num">{{money commissionEarned}}</td>
+        <td class="num">{{money commissionPaid}}</td>
+        <td class="num">{{money commissionPending}}</td>
+      </tr>
+    {{else}}
+      <tr><td colspan="5" class="muted">No staff</td></tr>
+    {{/each}}
+  </tbody>
+</table>
+
+{{> signatory}}

@@ -1,0 +1,91 @@
+<div class="doc-title">
+  <h1>Commission Statement</h1>
+  <div class="doc-number">
+    <div class="bold" style="font-size:12pt; color:var(--text);">{{period.label}}</div>
+    <div>Issued {{date generatedAt}}</div>
+  </div>
+</div>
+
+<div class="meta-grid">
+  <div class="panel">
+    <div class="panel__label">{{icon "user"}} Staff member</div>
+    <div class="bold">{{staff.name}}</div>
+    {{#if staff.phone}}<div class="muted">{{staff.phone}}</div>{{/if}}
+    {{#if staff.email}}<div class="muted">{{staff.email}}</div>{{/if}}
+  </div>
+  <div class="panel panel--soft">
+    <table class="kv">
+      <tr><td>Period</td><td>{{period.label}}</td></tr>
+      {{#if period.from}}
+        <tr><td>From</td><td>{{date period.from}}</td></tr>
+        <tr><td>To</td><td>{{date period.to}}</td></tr>
+      {{/if}}
+      <tr><td>Joined</td><td>{{date staff.joiningDate}}</td></tr>
+    </table>
+  </div>
+</div>
+
+<div class="stat-grid">
+  <div class="stat stat--info"><div class="stat__label">Earned in period</div><div class="stat__value">{{money stats.earnedInPeriod}}</div></div>
+  <div class="stat stat--success"><div class="stat__label">Paid in period</div><div class="stat__value">{{money stats.paidInPeriod}}</div></div>
+  <div class="stat stat--warning"><div class="stat__label">Pending (overall)</div><div class="stat__value">{{money stats.pendingOverall}}</div></div>
+</div>
+
+<h2 class="section-title">Projects</h2>
+<table class="data data--compact">
+  <thead>
+    <tr>
+      <th>Project</th>
+      <th>Client</th>
+      <th>Rate</th>
+      <th class="num">Deal amount</th>
+      <th class="num">Received *</th>
+      <th class="num">Commission *</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each deals}}
+      <tr>
+        <td>{{title}}{{#if (eq status "Cancelled")}} <span class="muted">(cancelled)</span>{{/if}}</td>
+        <td>{{clientName}}</td>
+        <td>{{#if (eq commissionType "fixed")}}{{money commissionRate}} fixed{{else}}{{percent commissionRate}}{{/if}}</td>
+        <td class="num">{{money dealAmount}}</td>
+        <td class="num">{{money receivedInPeriod}}</td>
+        <td class="num">{{money commissionEarnedInPeriod}}</td>
+      </tr>
+    {{else}}
+      <tr><td colspan="6" class="muted">No activity in this period</td></tr>
+    {{/each}}
+  </tbody>
+</table>
+<div class="footnote">* Within the selected period.</div>
+
+<h2 class="section-title">Payouts</h2>
+<table class="data data--compact">
+  <thead>
+    <tr>
+      <th>Date</th>
+      <th>Method</th>
+      <th>Reference</th>
+      <th class="num">Amount</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each payouts}}
+      <tr>
+        <td>{{date this.date}}</td>
+        <td>{{method}}</td>
+        <td>{{reference}}</td>
+        <td class="num">{{money amount}}</td>
+      </tr>
+    {{else}}
+      <tr><td colspan="4" class="muted">No payouts in this period</td></tr>
+    {{/each}}
+    <tr class="row-strong">
+      <td colspan="3">Total paid</td>
+      <td class="num">{{money payoutsTotal}}</td>
+    </tr>
+  </tbody>
+</table>
+
+{{> signatory}}

@@ -1,0 +1,15 @@
+{{#with branding.bankDetails}}
+  {{#if (or accountNumber iban)}}
+    <div class="panel avoid-break">
+      <div class="panel__label">{{icon "landmark"}} Bank details for payment</div>
+      <table class="kv">
+        {{#if bankName}}<tr><td>Bank</td><td>{{bankName}}</td></tr>{{/if}}
+        {{#if accountTitle}}<tr><td>Account title</td><td>{{accountTitle}}</td></tr>{{/if}}
+        {{#if accountNumber}}<tr><td>Account number</td><td>{{accountNumber}}</td></tr>{{/if}}
+        {{#if iban}}<tr><td>IBAN</td><td>{{iban}}</td></tr>{{/if}}
+        {{#if branch}}<tr><td>Branch</td><td>{{branch}}</td></tr>{{/if}}
+        {{#if swiftCode}}<tr><td>SWIFT</td><td>{{swiftCode}}</td></tr>{{/if}}
+      </table>
+    </div>
+  {{/if}}
+{{/with}}

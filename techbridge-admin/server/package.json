@@ -12,7 +12,8 @@
     "db:indexes": "node src/scripts/syncIndexes.js",
     "seed:demo": "node src/seeders/index.js --demo",
     "seed:fresh": "node src/seeders/index.js --fresh",
-    "pdf:sample": "node src/scripts/pdfSample.js"
+    "pdf:sample": "node src/scripts/pdfSample.js",
+    "pdf:docs": "node src/scripts/pdfDocs.js"
   },
   "keywords": [],
   "author": "",

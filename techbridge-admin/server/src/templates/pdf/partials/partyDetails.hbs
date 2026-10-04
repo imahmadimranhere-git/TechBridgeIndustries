@@ -1,0 +1,9 @@
+{{#if party}}
+  <div class="bold">{{party.name}}</div>
+  {{#if party.companyName}}<div>{{party.companyName}}</div>{{/if}}
+  {{#if party.addressLine}}<div class="muted">{{party.addressLine}}</div>{{/if}}
+  {{#if party.email}}<div class="muted">{{party.email}}</div>{{/if}}
+  {{#if party.phone}}<div class="muted">{{party.phone}}</div>{{/if}}
+{{else}}
+  <div class="muted">Record not available</div>
+{{/if}}

@@ -101,4 +101,29 @@ export async function lookupPublic(rawCode) {
   };
 }
 
-export default { issueVerification, lookupPublic, verificationUrl };
+/**
+ * Fixed documents (invoice, receipt, payout slip, welcome letter) keep ONE code:
+ * a re-download reuses it and only refreshes the snapshot.
+ */
+export async function ensureVerification({
+  documentType,
+  documentId,
+  sequence,
+  snapshot = {},
+  signedBy = null,
+  issuedBy = null,
+}) {
+  const existing = await DocumentVerification.findOne({ documentType, documentId, isRevoked: false }).sort({
+    issuedAt: -1,
+  });
+  if (!existing) {
+    return issueVerification({ documentType, documentId, sequence, snapshot, signedBy, issuedBy });
+  }
+
+  existing.snapshot = snapshot;
+  if (signedBy) existing.signedBy = signedBy;
+  await existing.save();
+  return existing;
+}
+
+export default { issueVerification, ensureVerification, lookupPublic, verificationUrl };

@@ -2,6 +2,8 @@ import { Router } from 'express';
 import * as controller from '../controllers/staffController.js';
 import { validate } from '../middleware/validate.js';
 import { idParams } from '../validators/common.js';
+import * as documents from '../controllers/documentController.js';
+import { periodPdfQuery } from '../validators/documentValidators.js';
 import {
   payoutBodySchema,
   staffBodySchema,
@@ -17,5 +19,5 @@ router.get('/:id', validate({ params: idParams, query: staffProfileQuery }), con
 router.put('/:id', validate({ params: idParams, body: staffBodySchema }), controller.update);
 router.delete('/:id', validate({ params: idParams }), controller.remove);
 router.post('/:id/payouts', validate({ params: idParams, body: payoutBodySchema }), controller.createPayout);
-
+router.get('/:id/commission-statement', validate({ params: idParams, query: periodPdfQuery }), documents.commissionStatementPdf);
 export default router;

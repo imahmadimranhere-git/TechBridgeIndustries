@@ -1,0 +1,105 @@
+<div class="doc-title">
+  <h1>Client Statement</h1>
+  <div class="doc-number">
+    <div class="bold" style="font-size:12pt; color:var(--text);">{{period.label}}</div>
+    <div>Issued {{date generatedAt}}</div>
+  </div>
+</div>
+
+<div class="meta-grid">
+  <div class="panel">
+    <div class="panel__label">{{icon "user"}} Client</div>
+    {{> partyDetails party=client}}
+  </div>
+  <div class="panel panel--soft">
+    <table class="kv">
+      <tr><td>Period</td><td>{{period.label}}</td></tr>
+      {{#if period.from}}
+        <tr><td>From</td><td>{{date period.from}}</td></tr>
+        <tr><td>To</td><td>{{date period.to}}</td></tr>
+      {{/if}}
+      <tr><td>Opening balance</td><td>{{money ledger.opening}}</td></tr>
+      <tr><td>Closing balance</td><td>{{money ledger.closing}}</td></tr>
+    </table>
+  </div>
+</div>
+
+<div class="stat-grid">
+  <div class="stat stat--info"><div class="stat__label">Total project value</div><div class="stat__value">{{money stats.totalDealValue}}</div></div>
+  <div class="stat stat--success"><div class="stat__label">Total received</div><div class="stat__value">{{money stats.totalReceived}}</div></div>
+  <div class="stat stat--danger"><div class="stat__label">Remaining balance</div><div class="stat__value">{{money stats.remaining}}</div></div>
+</div>
+
+<h2 class="section-title">Projects</h2>
+<table class="data">
+  <thead>
+    <tr>
+      <th>Project</th>
+      <th>Started</th>
+      <th>Status</th>
+      <th class="num">Amount</th>
+      <th class="num">Received</th>
+      <th class="num">Remaining</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each deals}}
+      <tr>
+        <td>{{title}}</td>
+        <td>{{date startDate}}</td>
+        <td>{{#if (eq status "Completed")}}{{> statusStamp status="Completed" inline=true}}{{else}}{{status}}{{/if}}</td>
+        <td class="num">{{money dealAmount}}</td>
+        <td class="num">{{money received}}</td>
+        <td class="num">{{money remaining}}</td>
+      </tr>
+    {{else}}
+      <tr><td colspan="6" class="muted">No projects yet</td></tr>
+    {{/each}}
+  </tbody>
+</table>
+
+<h2 class="section-title">Account ledger</h2>
+<table class="data data--compact">
+  <thead>
+    <tr>
+      <th style="width:70px;">Date</th>
+      <th>Description</th>
+      <th>Reference</th>
+      <th class="num">Debit</th>
+      <th class="num">Credit</th>
+      <th class="num">Balance</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#if period.from}}
+      <tr class="row-strong">
+        <td>{{date period.from}}</td>
+        <td colspan="4">Opening balance</td>
+        <td class="num">{{money ledger.opening}}</td>
+      </tr>
+    {{/if}}
+    {{#each ledger.rows}}
+      <tr>
+        <td>{{date this.date}}</td>
+        <td>{{description}}</td>
+        <td>{{reference}}</td>
+        <td class="num">{{#if debit}}{{money debit}}{{/if}}</td>
+        <td class="num">{{#if credit}}{{money credit}}{{/if}}</td>
+        <td class="num">{{money balance}}</td>
+      </tr>
+    {{else}}
+      <tr><td colspan="6" class="muted">No transactions in this period</td></tr>
+    {{/each}}
+    <tr class="row-strong">
+      <td colspan="3">Totals and closing balance</td>
+      <td class="num">{{money ledger.totalDebit}}</td>
+      <td class="num">{{money ledger.totalCredit}}</td>
+      <td class="num">{{money ledger.closing}}</td>
+    </tr>
+  </tbody>
+</table>
+<div class="footnote">Debit = agreed project amount, Credit = payment received, Balance = amount still payable.</div>
+
+{{> bankDetails}}
+
+{{> signatory}}

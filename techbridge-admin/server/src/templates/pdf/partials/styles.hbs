@@ -183,3 +183,48 @@ table.data th.num, .num, .amount { text-align: right; font-variant-numeric: tabu
 .signatory__designation { color: var(--muted); }
 .signatory__company { font-weight: 700; color: var(--brand); }
 .signatory__label { margin-top: 2px; font-size: 7.5pt; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+
+
+/* ---------- Phase 12: document building blocks ---------- */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+
+table.kv { width: 100%; border-collapse: collapse; font-size: 9pt; }
+table.kv td { padding: 2px 0; vertical-align: top; }
+table.kv td:first-child { color: var(--muted); padding-right: 10px; white-space: nowrap; }
+table.kv td:last-child { text-align: right; font-weight: 600; }
+
+.stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 6px 0 16px; }
+.stat-grid--4 { grid-template-columns: repeat(4, 1fr); }
+.stat { border: 1px solid var(--border); border-left: 3px solid var(--brand); border-radius: 8px; padding: 8px 10px; break-inside: avoid; }
+.stat__label { font-size: 7.5pt; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; }
+.stat__value { font-size: 12pt; font-weight: 700; font-variant-numeric: tabular-nums; }
+.stat--success { border-left-color: var(--success); }
+.stat--warning { border-left-color: var(--warning); }
+.stat--danger { border-left-color: var(--danger); }
+.stat--info { border-left-color: var(--info); }
+.stat--purple { border-left-color: #7c3aed; }
+
+/* Main financial values in the report, colour-coded like the dashboard */
+.stat--totalReceived { border-left-color: var(--info); }
+.stat--commissionPaid { border-left-color: var(--warning); }
+.stat--cashInHand { border-left-color: var(--success); }
+.stat--netProfit { border-left-color: #7c3aed; }
+
+.amount-hero { text-align: center; padding: 14px; margin: 6px 0 16px; border-radius: 10px; background: var(--brand-soft); }
+.amount-hero__label { font-size: 8pt; text-transform: uppercase; letter-spacing: 0.6px; color: var(--muted); }
+.amount-hero__value { font-size: 24pt; font-weight: 700; color: var(--brand); font-variant-numeric: tabular-nums; }
+
+table.data--compact { font-size: 8pt; }
+table.data--compact th, table.data--compact td { padding: 4px 6px; }
+table.data tr.row-strong td { font-weight: 700; background: var(--brand-soft) !important; }
+.totals tr.balance td { font-weight: 700; background: var(--brand-soft); }
+
+.text-box { font-size: 8.5pt; color: var(--muted); }
+.footnote { font-size: 7.5pt; color: var(--muted); margin-top: -10px; margin-bottom: 12px; }
+
+/* Welcome letter */
+.letter-meta { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+.letter-title { font-size: 16pt; margin-bottom: 12px; }
+.letter p { margin: 0 0 10px; text-align: justify; line-height: 1.7; }
+.services { list-style: none; padding: 0; margin: 4px 0 8px; columns: 2; column-gap: 24px; }
+.services li { display: flex; align-items: center; gap: 6px; padding: 2px 0; break-inside: avoid; }

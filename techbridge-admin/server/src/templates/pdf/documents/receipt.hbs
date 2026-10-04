@@ -1,0 +1,49 @@
+{{> statusStamp status="Received"}}
+
+<div class="doc-title">
+  <h1>Payment Receipt</h1>
+  <div class="doc-number">
+    <div class="bold" style="font-size:13pt; color:var(--text);">{{receiptNumber}}</div>
+    <div>{{icon "calendar"}} {{date payment.date}}</div>
+  </div>
+</div>
+
+<div class="amount-hero avoid-break">
+  <div class="amount-hero__label">Amount received</div>
+  <div class="amount-hero__value">{{money payment.amount}}</div>
+  <div class="muted">via {{payment.method}}{{#if payment.reference}} &middot; Ref {{payment.reference}}{{/if}}</div>
+</div>
+
+<div class="meta-grid">
+  <div class="panel">
+    <div class="panel__label">{{icon "user"}} Received from</div>
+    {{> partyDetails party=client}}
+  </div>
+  <div class="panel panel--soft">
+    <table class="kv">
+      <tr><td>Receipt number</td><td>{{receiptNumber}}</td></tr>
+      <tr><td>Payment date</td><td>{{date payment.date}}</td></tr>
+      <tr><td>Method</td><td>{{payment.method}}</td></tr>
+      {{#if payment.reference}}<tr><td>Reference</td><td>{{payment.reference}}</td></tr>{{/if}}
+      {{#if invoiceNumber}}<tr><td>Against invoice</td><td>{{invoiceNumber}}</td></tr>{{/if}}
+    </table>
+  </div>
+</div>
+
+{{#if deal}}
+  <h2 class="section-title">{{icon "file-text"}} {{deal.title}}</h2>
+  <div class="stat-grid">
+    <div class="stat stat--info"><div class="stat__label">Agreed amount</div><div class="stat__value">{{money deal.dealAmount}}</div></div>
+    <div class="stat stat--success"><div class="stat__label">Received to date</div><div class="stat__value">{{money deal.received}}</div></div>
+    <div class="stat stat--warning"><div class="stat__label">Remaining</div><div class="stat__value">{{money deal.remaining}}</div></div>
+  </div>
+{{/if}}
+
+{{#if payment.note}}
+  <div class="panel avoid-break">
+    <div class="panel__label">Note</div>
+    <div class="text-box">{{nl2br payment.note}}</div>
+  </div>
+{{/if}}
+
+{{> signatory}}

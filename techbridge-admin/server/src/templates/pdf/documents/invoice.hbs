@@ -1,0 +1,81 @@
+{{> statusStamp status=invoice.status}}
+
+<div class="doc-title">
+  <h1>Invoice</h1>
+  <div class="doc-number">
+    <div class="bold" style="font-size:13pt; color:var(--text);">{{invoice.invoiceNumber}}</div>
+    <div>{{icon "calendar"}} {{date invoice.invoiceDate}}</div>
+  </div>
+</div>
+
+<div class="meta-grid">
+  <div class="panel">
+    <div class="panel__label">{{icon "user"}} Bill to</div>
+    {{> partyDetails party=client}}
+  </div>
+  <div class="panel panel--soft">
+    <table class="kv">
+      <tr><td>Invoice number</td><td>{{invoice.invoiceNumber}}</td></tr>
+      <tr><td>Invoice date</td><td>{{date invoice.invoiceDate}}</td></tr>
+      <tr><td>Due date</td><td>{{date invoice.dueDate}}</td></tr>
+      {{#if deal.title}}<tr><td>Project</td><td>{{deal.title}}</td></tr>{{/if}}
+      <tr><td>Status</td><td>{{invoice.status}}</td></tr>
+    </table>
+  </div>
+</div>
+
+<table class="data">
+  <thead>
+    <tr>
+      <th style="width:28px;">#</th>
+      <th>Description</th>
+      <th class="num">Qty</th>
+      <th class="num">Rate</th>
+      <th class="num">Amount</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each invoice.items}}
+      <tr>
+        <td>{{inc @index}}</td>
+        <td>{{description}}</td>
+        <td class="num">{{qty}}</td>
+        <td class="num">{{money rate}}</td>
+        <td class="num">{{money amount}}</td>
+      </tr>
+    {{/each}}
+  </tbody>
+</table>
+
+<table class="totals avoid-break">
+  <tr><td>Subtotal</td><td class="amount">{{money invoice.subtotal}}</td></tr>
+  {{#if invoice.discount}}
+    <tr><td>Discount</td><td class="amount">- {{money invoice.discount}}</td></tr>
+  {{/if}}
+  {{#if invoice.taxPercent}}
+    <tr><td>Tax ({{percent invoice.taxPercent}})</td><td class="amount">{{money invoice.taxAmount}}</td></tr>
+  {{/if}}
+  <tr class="grand"><td>Total</td><td class="amount">{{money invoice.total}}</td></tr>
+  <tr><td>Paid</td><td class="amount">{{money invoice.amountPaid}}</td></tr>
+  <tr class="balance"><td>Balance due</td><td class="amount">{{money invoice.balanceDue}}</td></tr>
+</table>
+
+<div class="grid-2">
+  <div>
+    {{#if invoice.notes}}
+      <div class="panel avoid-break">
+        <div class="panel__label">Notes</div>
+        <div class="text-box">{{nl2br invoice.notes}}</div>
+      </div>
+    {{/if}}
+    {{#if invoice.terms}}
+      <div class="panel avoid-break" style="margin-top:10px;">
+        <div class="panel__label">Terms and conditions</div>
+        <div class="text-box">{{nl2br invoice.terms}}</div>
+      </div>
+    {{/if}}
+  </div>
+  <div>{{> bankDetails}}</div>
+</div>
+
+{{> signatory}}

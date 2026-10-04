@@ -3,7 +3,8 @@ import * as controller from '../controllers/invoiceController.js';
 import { validate } from '../middleware/validate.js';
 import { idParams } from '../validators/common.js';
 import { invoiceBodySchema, invoiceListQuery } from '../validators/invoiceValidators.js';
-
+import * as documents from '../controllers/documentController.js';
+import { pdfQuery } from '../validators/documentValidators.js';
 const router = Router();
 
 router.get('/', validate({ query: invoiceListQuery }), controller.list);
@@ -13,6 +14,6 @@ router.put('/:id', validate({ params: idParams, body: invoiceBodySchema }), cont
 router.delete('/:id', validate({ params: idParams }), controller.remove);
 router.post('/:id/duplicate', validate({ params: idParams }), controller.duplicate);
 router.post('/:id/mark-sent', validate({ params: idParams }), controller.markSent);
-// Phase 12-13: /:id/pdf and /:id/email
+router.get('/:id/pdf', validate({ params: idParams, query: pdfQuery }), documents.invoicePdf);
 
 export default router;
