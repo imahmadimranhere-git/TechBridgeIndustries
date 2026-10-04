@@ -4,13 +4,14 @@ import env from './config/env.js';
 import logger from './config/logger.js';
 import { connectDB, disconnectDB } from './config/db.js';
 import { closeMail } from './services/MailService.js';
+import { startJobs } from './jobs/index.js';
 
 // Extra cleanup added by later phases (cron jobs in Phase 14, Puppeteer browser in Phase 10)
 const shutdownTasks = [closeBrowser, closeMail];
 
 async function start() {
   await connectDB();
-
+  shutdownTasks.unshift(startJobs());
   const app = createApp();
   const server = app.listen(env.PORT, () => {
     logger.info(`🚀 API ready at ${env.SERVER_URL}/api  (${env.NODE_ENV})`);

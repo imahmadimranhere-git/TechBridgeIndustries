@@ -14,7 +14,8 @@
     "seed:fresh": "node src/seeders/index.js --fresh",
     "pdf:sample": "node src/scripts/pdfSample.js",
     "pdf:docs": "node src/scripts/pdfDocs.js",
-    "mail:test": "node src/scripts/mailTest.js"
+    "mail:test": "node src/scripts/mailTest.js",
+    "job:overdue": "node src/scripts/runOverdue.js"
   },
   "keywords": [],
   "author": "",
