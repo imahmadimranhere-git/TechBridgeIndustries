@@ -76,10 +76,10 @@ export function SettingsProvider({ children }) {
 
   useEffect(() => {
     applyFavicon(branding.logoUrl, branding.companyName, branding.brandPrimaryColor);
-    document.title = branding.companyName;
   }, [branding.logoUrl, branding.companyName, branding.brandPrimaryColor]);
 
   // formatMoney that already knows the currency symbol from Settings
+  
   const formatMoney = useCallback(
     (minor, options = {}) => formatMoneyBase(minor, { symbol: branding.currencySymbol, ...options }),
     [branding.currencySymbol]

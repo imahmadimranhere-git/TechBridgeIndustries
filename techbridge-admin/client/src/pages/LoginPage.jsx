@@ -11,6 +11,7 @@ import { useAuth } from '../context/AuthContext.jsx';
 import { useSettings } from '../context/SettingsContext.jsx';
 import { loginSchema } from '../schemas/authSchemas.js';
 import { applyServerErrors } from '../utils/formErrors.js';
+import { usePageTitle } from '../hooks/usePageTitle.js';
 
 const FEATURES = [
   { icon: Wallet, title: 'Clear finances', text: 'Deals, payments and staff commission in one place.' },
@@ -19,6 +20,7 @@ const FEATURES = [
 ];
 
 export default function LoginPage() {
+      usePageTitle('Sign in');
   const { login } = useAuth();
   const { branding } = useSettings();
   const navigate = useNavigate();

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 export default function NotFoundPage() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center px-4 text-center">
+    <div className="flex min-h-[60vh]  flex-col items-center justify-center px-4 text-center">
       <span className="flex size-14 items-center justify-center rounded-2xl bg-brand-50 text-brand">
         <SearchX className="size-7" aria-hidden="true" />
       </span>
