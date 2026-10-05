@@ -63,3 +63,13 @@ export function formatCompactMoney(minor, symbol = 'Rs') {
   const separator = /[A-Za-z.]$/.test(symbol) ? ' ' : '';
   return `${symbol}${separator}${compact}`;
 }
+
+
+/** Like toMinor, but returns null instead of throwing (for live totals while typing) */
+export function safeMinor(value) {
+  try {
+    return toMinor(value);
+  } catch {
+    return null;
+  }
+}
