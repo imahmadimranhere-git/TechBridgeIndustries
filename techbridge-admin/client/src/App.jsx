@@ -1,5 +1,7 @@
 import { Route, Routes } from 'react-router-dom';
 import AppShell from './components/layout/AppShell.jsx';
+import ClientProfilePage from './pages/clients/ClientProfilePage.jsx';
+import ClientsPage from './pages/clients/ClientsPage.jsx';
 import DashboardPage from './pages/DashboardPage.jsx';
 import LoginPage from './pages/LoginPage.jsx';
 import NotFoundPage from './pages/NotFoundPage.jsx';
@@ -14,12 +16,14 @@ export default function App() {
         <Route path="/login" element={<LoginPage />} />
       </Route>
 
-      {/* Phase 17 adds the public /verify/:code page here */}
+      {/* Phase 17D adds the public /verify/:code page here */}
 
       {/* Admin area: login required, inside the sidebar layout */}
       <Route element={<ProtectedRoute />}>
         <Route element={<AppShell />}>
           <Route path="/" element={<DashboardPage />} />
+          <Route path="/clients" element={<ClientsPage />} />
+          <Route path="/clients/:id" element={<ClientProfilePage />} />
           <Route path="/ui" element={<UiShowcasePage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>

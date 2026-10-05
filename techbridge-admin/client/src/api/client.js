@@ -21,8 +21,8 @@ const api = axios.create({
   timeout: 60_000,
 });
 
-function messageFor(error) {
-  if (error.response?.data?.message) return error.response.data.message;
+function messageFor(error, data) {
+  if (data?.message) return data.message;
   if (error.code === 'ECONNABORTED') return 'The server took too long to respond. Please try again.';
   if (!error.response) return 'Cannot reach the server. Check that it is running and try again.';
   return error.message || 'Something went wrong';
@@ -30,10 +30,19 @@ function messageFor(error) {
 
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
     const status = error.response?.status ?? 0;
-    const data = error.response?.data ?? {};
     const url = error.config?.url ?? '';
+    let data = error.response?.data ?? {};
+
+    // PDF/CSV requests use responseType 'blob', so JSON errors arrive wrapped in a Blob
+    if (typeof Blob !== 'undefined' && data instanceof Blob) {
+      try {
+        data = JSON.parse(await data.text());
+      } catch {
+        data = {};
+      }
+    }
 
     // A logged-in session has expired (but not while logging in or checking the session)
     if (status === 401 && !url.includes('/auth/login') && !url.includes('/auth/me')) {
@@ -42,10 +51,10 @@ api.interceptors.response.use(
 
     return Promise.reject(
       new ApiRequestError({
-        message: messageFor(error),
+        message: messageFor(error, data),
         status,
-        errors: data.errors ?? {},
-        meta: data.meta ?? null,
+        errors: data?.errors ?? {},
+        meta: data?.meta ?? null,
       })
     );
   }

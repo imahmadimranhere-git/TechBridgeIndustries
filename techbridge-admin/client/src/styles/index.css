@@ -7,7 +7,7 @@
  *   --color-brand-50     -> bg-brand-50 ...
  *   --color-success-soft -> bg-success-soft ...
  */
-@theme {
+@theme static {
   --font-sans: "Inter Variable", ui-sans-serif, system-ui, "Segoe UI", Roboto, Arial, sans-serif;
 
   /* Brand: defaults only. SettingsContext overrides --color-brand at runtime. */

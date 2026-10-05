@@ -53,3 +53,13 @@ export function formatPercent(value) {
   const rounded = Math.round((Number(value) || 0) * 100) / 100;
   return `${rounded.toLocaleString('en-US')}%`;
 }
+
+
+/** 125000000 -> "Rs 1.3M" (for chart axes where space is short) */
+export function formatCompactMoney(minor, symbol = 'Rs') {
+  const compact = new Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 1 }).format(
+    (Number(minor) || 0) / 100
+  );
+  const separator = /[A-Za-z.]$/.test(symbol) ? ' ' : '';
+  return `${symbol}${separator}${compact}`;
+}
