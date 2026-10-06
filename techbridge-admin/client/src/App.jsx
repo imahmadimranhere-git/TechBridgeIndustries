@@ -14,10 +14,14 @@ import NotesPage from './pages/notes/NotesPage.jsx';
 import NotFoundPage from './pages/NotFoundPage.jsx';
 import PaymentsPage from './pages/payments/PaymentsPage.jsx';
 import PayoutsPage from './pages/payouts/PayoutsPage.jsx';
+import ProfilePage from './pages/profile/ProfilePage.jsx';
 import ReportsPage from './pages/reports/ReportsPage.jsx';
+import SettingsPage from './pages/settings/SettingsPage.jsx';
 import StaffPage from './pages/staff/StaffPage.jsx';
 import StaffProfilePage from './pages/staff/StaffProfilePage.jsx';
 import UiShowcasePage from './pages/UiShowcasePage.jsx';
+import UsersPage from './pages/users/UsersPage.jsx';
+import VerifyPage from './pages/VerifyPage.jsx';
 import ProtectedRoute, { GuestRoute } from './routes/ProtectedRoute.jsx';
 
 export default function App() {
@@ -28,7 +32,9 @@ export default function App() {
         <Route path="/login" element={<LoginPage />} />
       </Route>
 
-      {/* Phase 17D adds the public /verify/:code page here */}
+      {/* Public for everyone (QR codes on PDFs open this) */}
+      <Route path="/verify" element={<VerifyPage />} />
+      <Route path="/verify/:code" element={<VerifyPage />} />
 
       {/* Admin area: login required, inside the sidebar layout */}
       <Route element={<ProtectedRoute />}>
@@ -55,6 +61,10 @@ export default function App() {
           <Route path="/payouts" element={<PayoutsPage />} />
           <Route path="/notes" element={<NotesPage />} />
           <Route path="/reports" element={<ReportsPage />} />
+
+          <Route path="/users" element={<UsersPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/settings" element={<SettingsPage />} />
 
           <Route path="/ui" element={<UiShowcasePage />} />
           <Route path="*" element={<NotFoundPage />} />
