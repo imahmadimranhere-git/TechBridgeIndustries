@@ -3,18 +3,7 @@ import { Controller, useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
-import {
-  Building2,
-  FileCheck2,
-  FileSignature,
-  Hash,
-  Landmark,
-  Mail,
-  Palette,
-  Save,
-  Send,
-  Stamp,
-} from 'lucide-react';
+import { Building2, FileCheck2, FileSignature, Hash, Landmark, Mail, Palette, Save, Send, Stamp } from 'lucide-react';
 import { settingsApi, usersApi } from '../../api/endpoints.js';
 import PageHeader from '../../components/layout/PageHeader.jsx';
 import CompanyStampPreview from '../../components/stamps/CompanyStampPreview.jsx';
@@ -37,7 +26,7 @@ import { formatMoney } from '../../utils/formatMoney.js';
 const TAB_KEYS = {
   company: ['companyName', 'tagline', 'address', 'city', 'country', 'phone', 'email', 'website'],
   branding: ['brandPrimaryColor', 'brandSecondaryColor', 'currencySymbol'],
-  stamp: ['stampMode', 'defaultSignatoryId', 'signatoryLabel'],
+  stamp: ['stampMode', 'defaultSignatoryId', 'coSignatory1', 'coSignatory2', 'signatoryLabel'],
   documents: ['documentOptions'],
   invoicing: ['invoicePrefix', 'nextInvoiceNumber', 'defaultTaxPercent', 'defaultDueDays', 'invoiceTerms', 'footerText'],
   bank: ['bankDetails'],
@@ -49,6 +38,15 @@ const STAMP_MODE_OPTIONS = [
   { value: 'uploaded', label: 'Uploaded stamp image' },
   { value: 'none', label: 'No stamp' },
 ];
+
+const DOCUMENT_COLUMNS = [
+  { option: 'showSignature', label: 'Signature' },
+  { option: 'showCoSignature', label: 'Other founders' },
+  { option: 'showStamp', label: 'Stamp' },
+  { option: 'showQr', label: 'QR code' },
+];
+
+const adminLabel = (user) => `${user.name}${user.designation ? ` (${user.designation})` : ''}`;
 
 function ColorField({ label, value, onChange, error }) {
   return (
@@ -100,7 +98,6 @@ export default function SettingsPage() {
   const settingsQuery = useQuery({ queryKey: ['settings'], queryFn: settingsApi.get });
   const usersQuery = useQuery({ queryKey: ['users'], queryFn: () => usersApi.list({ limit: 100 }) });
 
-  const form = useForm({ resolver: zodResolver(settingsFormSchema) });
   const {
     register,
     control,
@@ -110,7 +107,7 @@ export default function SettingsPage() {
     setError,
     reset,
     formState: { errors },
-  } = form;
+  } = useForm({ resolver: zodResolver(settingsFormSchema) });
 
   // Fill the form once when the settings first arrive
   const [loaded, setLoaded] = useState(false);
@@ -178,7 +175,13 @@ export default function SettingsPage() {
 
   const data = settingsQuery.data;
   const saving = (tab) => savingTab === tab && saveMutation.isPending;
-  const activeAdmins = (usersQuery.data?.items ?? []).filter((user) => user.isActive);
+  const allAdmins = usersQuery.data?.items ?? [];
+  const activeAdmins = allAdmins.filter((user) => user.isActive);
+  // Founders may be inactive admins (sign documents but never log in)
+  const founderOptions = allAdmins.map((user) => ({
+    value: user._id,
+    label: `${adminLabel(user)}${user.isActive ? '' : ' - cannot log in'}`,
+  }));
 
   /* ---------------- tabs ---------------- */
 
@@ -288,12 +291,33 @@ export default function SettingsPage() {
               label="Default signatory"
               placeholder="Choose an admin"
               hint="Signs documents that have no signer of their own."
-              options={activeAdmins.map((user) => ({ value: user._id, label: `${user.name}${user.designation ? ` (${user.designation})` : ''}` }))}
+              options={activeAdmins.map((user) => ({ value: user._id, label: adminLabel(user) }))}
               error={errors.defaultSignatoryId?.message}
               {...register('defaultSignatoryId')}
             />
             <Input label="Signatory label" required error={errors.signatoryLabel?.message} {...register('signatoryLabel')} />
+            <Select
+              label="Other founder 1 (optional)"
+              placeholder="None"
+              hint="Signs next to the main signer and is listed as a contact."
+              options={founderOptions}
+              error={errors.coSignatory1?.message}
+              {...register('coSignatory1')}
+            />
+            <Select
+              label="Other founder 2 (optional)"
+              placeholder="None"
+              hint="Up to three signatures fit on a page."
+              options={founderOptions}
+              error={errors.coSignatory2?.message}
+              {...register('coSignatory2')}
+            />
           </div>
+          <p className="rounded-xl bg-brand-50 px-4 py-3 text-sm text-gray-600">
+            Every document shows the person who created it on the right (with the stamp), and the other founders to the left. Welcome
+            letters list all of them as points of contact, and emails list them under the sign-off. Use the placeholder{' '}
+            <code className="rounded bg-white px-1 font-mono text-xs">{'{team}'}</code> in the welcome letter to name them in the text.
+          </p>
         </div>
         <div className="flex flex-col items-center gap-2">
           <p className="text-sm font-medium text-gray-700">Preview</p>
@@ -314,8 +338,8 @@ export default function SettingsPage() {
               <th scope="col" className="px-4 py-3 text-left text-xs font-semibold tracking-wide text-gray-500 uppercase">
                 Document
               </th>
-              {['Signature', 'Stamp', 'QR code'].map((label) => (
-                <th key={label} scope="col" className="px-4 py-3 text-center text-xs font-semibold tracking-wide text-gray-500 uppercase">
+              {DOCUMENT_COLUMNS.map(({ label }) => (
+                <th key={label} scope="col" className="px-4 py-3 text-center text-xs font-semibold tracking-wide whitespace-nowrap text-gray-500 uppercase">
                   {label}
                 </th>
               ))}
@@ -324,12 +348,12 @@ export default function SettingsPage() {
           <tbody className="divide-y divide-gray-100">
             {DOCUMENT_TYPES.map(({ key, label }) => (
               <tr key={key} className="even:bg-gray-50/60">
-                <td className="px-4 py-3 font-medium text-gray-900">{label}</td>
-                {['showSignature', 'showStamp', 'showQr'].map((option) => (
+                <td className="px-4 py-3 font-medium whitespace-nowrap text-gray-900">{label}</td>
+                {DOCUMENT_COLUMNS.map(({ option, label: columnLabel }) => (
                   <td key={option} className="px-4 py-3 text-center">
                     <input
                       type="checkbox"
-                      aria-label={`${label}: ${option.replace('show', 'show ')}`}
+                      aria-label={`${label}: ${columnLabel}`}
                       className="size-4 rounded border-gray-300 text-brand focus:ring-brand/40"
                       {...register(`documentOptions.${key}.${option}`)}
                     />

@@ -37,6 +37,18 @@ export const update = asyncHandler(async (req, res) => {
     }
   }
 
+  // Other signatories may be inactive admins (e.g. a founder who signs but never logs in)
+  if (patch.coSignatoryIds) {
+    patch.coSignatoryIds = [...new Set(patch.coSignatoryIds.map(String))];
+    const found = await User.countDocuments({ _id: { $in: patch.coSignatoryIds } });
+    if (found !== patch.coSignatoryIds.length) {
+      throw ApiError.badRequest('One of the selected signatories was not found', { coSignatory1: 'Choose an admin' });
+    }
+  }
+  if (patch.coSignatoryId && !(await User.exists({ _id: patch.coSignatoryId }))) {
+    throw ApiError.badRequest('Selected second signatory was not found', { coSignatoryId: 'Choose an admin' });
+  }
+
   if (patch.stampMode === 'uploaded' && !current.stampPath) {
     throw ApiError.badRequest('Upload a company stamp first', { stampMode: 'No stamp uploaded yet' });
   }

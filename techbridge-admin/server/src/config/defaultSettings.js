@@ -1,13 +1,13 @@
 import { DOCUMENT_TYPES } from './constants.js';
 
-const ALL_ON = { showSignature: true, showStamp: true, showQr: true };
+const ALL_ON = { showSignature: true, showCoSignature: true, showStamp: true, showQr: true };
 
 // Placeholders are replaced when the PDF is generated
 export const DEFAULT_WELCOME_LETTER = `Dear {client_name},
 
 Thank you for choosing {company_name}. We are delighted to welcome {client_company} as our client and look forward to a long and successful partnership.
 
-As of {date}, we are pleased to confirm the start of our work together on {deal_title}, with an agreed value of {deal_amount}. Our team will keep you informed at every stage, and your point of contact for anything you need is {contact_person}.
+As of {date}, we are pleased to confirm the start of our work together on {deal_title}, with an agreed value of {deal_amount}. Our team will keep you informed at every stage. For anything you need, you can reach our founders: {team}.
 
 Below you will find an overview of our services and our bank details for payments. If you have any questions, simply reply to this letter or give us a call; we are always happy to help.
 
@@ -48,6 +48,9 @@ export const DEFAULT_SETTINGS = Object.freeze({
   stampMode: 'auto', // 'uploaded' | 'auto' | 'none'
   stampPath: null,
   defaultSignatoryId: null,
+  // Other founders who sign next to the main signer and appear as contacts (max 2)
+  coSignatoryIds: [],
+  coSignatoryId: null, // older single-value setting, still read for compatibility
   signatoryLabel: 'Authorized Signatory',
   documentOptions: Object.fromEntries(DOCUMENT_TYPES.map((type) => [type, { ...ALL_ON }])),
 

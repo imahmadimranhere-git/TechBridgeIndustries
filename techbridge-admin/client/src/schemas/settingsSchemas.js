@@ -12,7 +12,7 @@ export const DOCUMENT_TYPES = [
   { key: 'FinancialReport', label: 'Financial report' },
 ];
 
-export const LETTER_PLACEHOLDERS = ['{client_name}', '{client_company}', '{date}', '{company_name}', '{contact_person}', '{deal_title}', '{deal_amount}'];
+export const LETTER_PLACEHOLDERS = ['{client_name}', '{client_company}', '{date}', '{company_name}', '{contact_person}', '{team}', '{deal_title}', '{deal_amount}'];
 
 const hex = (label) => z.string().trim().regex(HEX_COLOR, `${label} must look like #1d4ed8`);
 const wholeNumber = (label, min, max) =>
@@ -38,8 +38,14 @@ export const settingsFormSchema = z.object({
 
   stampMode: z.enum(['uploaded', 'auto', 'none']),
   defaultSignatoryId: z.string(),
+  // Other founders (up to two) who sign next to the main signer
+  coSignatory1: z.string(),
+  coSignatory2: z.string(),
   signatoryLabel: requiredText(60, 'Signatory label'),
-  documentOptions: z.record(z.string(), z.object({ showSignature: z.boolean(), showStamp: z.boolean(), showQr: z.boolean() })),
+  documentOptions: z.record(
+    z.string(),
+    z.object({ showSignature: z.boolean(), showCoSignature: z.boolean(), showStamp: z.boolean(), showQr: z.boolean() })
+  ),
 
   invoicePrefix: z.string().trim().regex(/^[A-Za-z0-9]{1,10}$/, 'Use 1-10 letters or numbers'),
   nextInvoiceNumber: wholeNumber('Next number', 1, 9999999),
@@ -63,8 +69,14 @@ export const settingsFormSchema = z.object({
 
 /** API response -> form values */
 export function settingsToForm({ settings, nextInvoiceNumber }) {
+  // New list, or the older single "second signatory" setting
+  const coSignatoryIds = settings.coSignatoryIds?.length ? settings.coSignatoryIds : [settings.coSignatoryId].filter(Boolean);
+
   const documentOptions = Object.fromEntries(
-    DOCUMENT_TYPES.map(({ key }) => [key, { showSignature: true, showStamp: true, showQr: true, ...(settings.documentOptions?.[key] ?? {}) }])
+    DOCUMENT_TYPES.map(({ key }) => [
+      key,
+      { showSignature: true, showCoSignature: true, showStamp: true, showQr: true, ...(settings.documentOptions?.[key] ?? {}) },
+    ])
   );
   return {
     companyName: settings.companyName ?? '',
@@ -80,6 +92,8 @@ export function settingsToForm({ settings, nextInvoiceNumber }) {
     currencySymbol: settings.currencySymbol ?? 'Rs',
     stampMode: settings.stampMode ?? 'auto',
     defaultSignatoryId: settings.defaultSignatoryId ?? '',
+    coSignatory1: coSignatoryIds[0] ?? '',
+    coSignatory2: coSignatoryIds[1] ?? '',
     signatoryLabel: settings.signatoryLabel ?? 'Authorized Signatory',
     documentOptions,
     invoicePrefix: settings.invoicePrefix ?? 'TBI',
@@ -118,6 +132,12 @@ export function settingsPatch(values, keys, currentNextNumber) {
       patch[key] = Number(values[key] || 0);
     } else if (key === 'defaultSignatoryId') {
       patch.defaultSignatoryId = values.defaultSignatoryId || null;
+    } else if (key === 'coSignatory1') {
+      // Both dropdowns become one list; the old single setting is cleared
+      patch.coSignatoryIds = [...new Set([values.coSignatory1, values.coSignatory2].filter(Boolean))];
+      patch.coSignatoryId = null;
+    } else if (key === 'coSignatory2') {
+      // Saved together with coSignatory1
     } else if (key === 'invoicePrefix') {
       patch.invoicePrefix = values.invoicePrefix.toUpperCase();
     } else {

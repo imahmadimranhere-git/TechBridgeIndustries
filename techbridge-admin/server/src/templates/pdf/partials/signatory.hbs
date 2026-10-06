@@ -1,5 +1,20 @@
 {{#if signatory}}
-<section class="signatory avoid-break">
+<section class="signatory avoid-break{{#if signatory.coSigners.[1]}} signatory--three{{/if}}">
+  {{#each signatory.coSigners}}
+    <div class="signatory__box">
+      <div class="signatory__signature">
+        {{#if signatureDataUri}}
+          <img src="{{signatureDataUri}}" alt="Signature">
+        {{/if}}
+      </div>
+      <div class="signatory__line"></div>
+      <div class="signatory__name">{{name}}</div>
+      {{#if designation}}<div class="signatory__designation">{{designation}}</div>{{/if}}
+      <div class="signatory__company">{{@root.signatory.companyName}}</div>
+      <div class="signatory__label">{{@root.signatory.label}} &middot; {{date @root.signatory.date}}</div>
+    </div>
+  {{/each}}
+
   <div class="signatory__box">
     {{#if signatory.stampDataUri}}
       <img class="signatory__stamp" src="{{signatory.stampDataUri}}" alt="">

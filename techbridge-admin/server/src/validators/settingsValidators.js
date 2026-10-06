@@ -1,12 +1,12 @@
 import { z } from 'zod';
 import { DOCUMENT_TYPES, STAMP_MODES } from '../config/constants.js';
-import { nullableObjectId, optionalEmail, optionalText, percentInput, requiredText } from './common.js';
+import { nullableObjectId, objectId, optionalEmail, optionalText, percentInput, requiredText } from './common.js';
 
 const hexColor = (label) =>
   z.string().trim().regex(/^#[0-9a-fA-F]{6}$/, `${label} must be a hex color like #1d4ed8`);
 
 const documentOption = z
-  .object({ showSignature: z.boolean(), showStamp: z.boolean(), showQr: z.boolean() })
+  .object({ showSignature: z.boolean(), showCoSignature: z.boolean(), showStamp: z.boolean(), showQr: z.boolean() })
   .partial();
 
 // Every key is optional: the Settings page can save one section at a time
@@ -30,6 +30,8 @@ export const settingsUpdateSchema = z
     // Stamp & signatory
     stampMode: z.enum(STAMP_MODES),
     defaultSignatoryId: nullableObjectId('Signatory'),
+    coSignatoryIds: z.array(objectId('Signatory')).max(2, 'Choose at most 2 other signatories'),
+    coSignatoryId: nullableObjectId('Second signatory'),
     signatoryLabel: requiredText(60, 'Signatory label'),
     documentOptions: z
       .object(Object.fromEntries(DOCUMENT_TYPES.map((type) => [type, documentOption])))

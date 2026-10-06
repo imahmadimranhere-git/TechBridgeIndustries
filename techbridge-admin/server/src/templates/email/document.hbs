@@ -42,3 +42,19 @@
   {{#if sender.designation}}<br><span style="color:#6b7280;">{{sender.designation}}</span>{{/if}}
   <br><span style="color:#6b7280;">{{branding.company.name}}</span>
 </p>
+
+{{#if team.length}}
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:16px 0 0; border-top:1px solid #e5e7eb;">
+    <tr>
+      <td style="padding-top:12px; font-size:11px; font-weight:700; letter-spacing:0.5px; text-transform:uppercase; color:{{branding.colors.primary}};">Our founders</td>
+    </tr>
+    {{#each team}}
+      <tr>
+        <td style="padding-top:6px; font-size:12px; line-height:1.5; color:#6b7280;">
+          <strong style="color:#111827;">{{name}}</strong>{{#if designation}}, {{designation}}{{/if}}
+          {{#if phone}}<br>{{phone}}{{/if}}{{#if email}}{{#if phone}} &middot; {{else}}<br>{{/if}}<a href="mailto:{{email}}" style="color:#6b7280;">{{email}}</a>{{/if}}
+        </td>
+      </tr>
+    {{/each}}
+  </table>
+{{/if}}

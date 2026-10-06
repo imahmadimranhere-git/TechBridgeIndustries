@@ -11,6 +11,7 @@ import FinanceService from './FinanceService.js';
 import * as InvoiceService from './InvoiceService.js';
 import { isUsingTestInbox, sendMail } from './MailService.js';
 import { getSettings } from './SettingsService.js';
+import { getLeadershipContacts } from './SignatoryService.js';
 import { renderEmail } from './TemplateService.js';
 import { verificationUrl } from './VerificationService.js';
 
@@ -34,12 +35,15 @@ const verificationContext = (code) => (code ? { code, url: verificationUrl(code)
 
 /** Renders the branded email and sends it, with the PDF attached when given */
 async function deliver({ template = 'document', to, cc, subject, context, document, user }) {
-  const branding = await getDocumentBranding();
+  const [branding, contacts] = await Promise.all([getDocumentBranding(), getLeadershipContacts(user?._id)]);
+
   const html = await renderEmail(template, {
     ...context,
     subject,
     branding,
     sender: user ? { name: user.name, designation: user.designation } : null,
+    // All founders under the sign-off (only when there is more than one)
+    team: contacts.length > 1 ? contacts : [],
     year: new Date().getFullYear(),
   });
 

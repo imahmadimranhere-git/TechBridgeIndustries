@@ -1,7 +1,7 @@
 import { format } from 'date-fns';
 import mongoose from 'mongoose';
 import { DEAL_STATUS, DOCUMENT_TYPE, WELCOME_LETTER_ACTIONS } from '../config/constants.js';
-import { Client, CommissionPayout, Deal, Invoice, Payment, Staff, User, WelcomeLetterLog } from '../models/index.js';
+import { Client, CommissionPayout, Deal, Invoice, Payment, Staff, WelcomeLetterLog } from '../models/index.js';
 import ApiError from '../utils/ApiError.js';
 import { dateMatch, resolveDateRange } from '../utils/dateRanges.js';
 import { fillLetterTemplate } from '../utils/letterTemplate.js';
@@ -10,7 +10,7 @@ import FinanceService from './FinanceService.js';
 import { createPdf } from './PdfService.js';
 import { getReport } from './ReportService.js';
 import { getSettings } from './SettingsService.js';
-import { buildSignatory, documentOptionsFor } from './SignatoryService.js';
+import { buildSignatory, documentOptionsFor, getLeadershipContacts } from './SignatoryService.js';
 import { ensureVerification, issueVerification } from './VerificationService.js';
 
 /* ------------------------------------------------------------------ */
@@ -38,6 +38,15 @@ const clientView = (client) =>
   };
 
 const periodView = (period) => ({ range: period.range, label: period.label, from: period.from, to: period.to });
+
+// "Ahmad Imran (Co-Founder & CEO)"
+const withRole = (person) => (person.designation ? `${person.name} (${person.designation})` : person.name);
+
+// ['A'] -> 'A', ['A', 'B'] -> 'A and B', ['A', 'B', 'C'] -> 'A, B and C'
+function joinNames(names) {
+  if (names.length <= 1) return names[0] ?? '';
+  return `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}`;
+}
 
 /**
  * Shared final step: signatory + (optional) verification code + PDF.
@@ -319,7 +328,7 @@ export async function payoutSlipPdf(payoutId, user) {
       }),
   });
 
-    return { ...result, filename: `Payout-${slipNumber}.pdf`, record: payout, number: slipNumber };
+  return { ...result, filename: `Payout-${slipNumber}.pdf`, record: payout, number: slipNumber };
 }
 
 /* ------------------------------------------------------------------ */
@@ -399,9 +408,9 @@ export async function welcomeLetterPdf(clientId, { dealId } = {}, user) {
   }
 
   const settings = await getSettings();
-  // Point of contact: the admin creating the letter, else the default signatory
-  const contact =
-    user ?? (settings.defaultSignatoryId ? await User.findById(settings.defaultSignatoryId).lean() : null);
+  // Points of contact: the admin creating the letter first, then the other founders from Settings
+  const contacts = await getLeadershipContacts(user?._id ?? settings.defaultSignatoryId);
+  const primary = contacts[0];
   const letterDate = new Date();
 
   const paragraphs = fillLetterTemplate(settings.welcomeLetterTemplate, {
@@ -409,7 +418,8 @@ export async function welcomeLetterPdf(clientId, { dealId } = {}, user) {
     client_company: client.companyName || client.name,
     date: format(letterDate, 'dd MMMM yyyy'),
     company_name: settings.companyName,
-    contact_person: contact?.name ?? settings.companyName,
+    contact_person: primary ? withRole(primary) : settings.companyName,
+    team: contacts.length ? joinNames(contacts.map(withRole)) : settings.companyName,
     deal_title: deal?.title ?? 'your project',
     deal_amount: deal ? formatMoney(deal.dealAmount, { symbol: settings.currencySymbol }) : 'the agreed amount',
   });
@@ -435,7 +445,7 @@ export async function welcomeLetterPdf(clientId, { dealId } = {}, user) {
         startDate: deal.startDate,
         deadline: deal.deadline,
       },
-      contact: contact && { name: contact.name, designation: contact.designation, phone: contact.phone, email: contact.email },
+      contacts,
     },
     verify: () =>
       ensureVerification({

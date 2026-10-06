@@ -40,13 +40,20 @@
   {{/if}}
 
   <div class="panel panel--soft avoid-break">
-    <div class="panel__label">{{icon "phone"}} Your point of contact</div>
-    {{#if contact}}
-      <div class="bold">{{contact.name}}</div>
-      {{#if contact.designation}}<div>{{contact.designation}}</div>{{/if}}
-    {{/if}}
-    {{#if branding.company.phone}}<div class="muted">{{branding.company.phone}}</div>{{/if}}
-    {{#if branding.company.email}}<div class="muted">{{branding.company.email}}</div>{{/if}}
+    <div class="panel__label">{{icon "phone"}} {{#if contacts.[1]}}Your points of contact{{else}}Your point of contact{{/if}}</div>
+    <div class="contacts">
+      {{#each contacts}}
+        <div class="contact-card">
+          <div class="bold">{{name}}</div>
+          {{#if designation}}<div>{{designation}}</div>{{/if}}
+          {{#if phone}}<div class="contact-card__line">{{icon "phone"}}<span>{{phone}}</span></div>{{/if}}
+          {{#if email}}<div class="contact-card__line">{{icon "mail"}}<span>{{email}}</span></div>{{/if}}
+        </div>
+      {{else}}
+        {{#if branding.company.phone}}<div class="muted">{{branding.company.phone}}</div>{{/if}}
+        {{#if branding.company.email}}<div class="muted">{{branding.company.email}}</div>{{/if}}
+      {{/each}}
+    </div>
   </div>
 </div>
 
