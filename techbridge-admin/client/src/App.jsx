@@ -10,8 +10,13 @@ import InvoiceFormPage from './pages/invoices/InvoiceFormPage.jsx';
 import InvoicesPage from './pages/invoices/InvoicesPage.jsx';
 import InvoiceViewPage from './pages/invoices/InvoiceViewPage.jsx';
 import LoginPage from './pages/LoginPage.jsx';
+import NotesPage from './pages/notes/NotesPage.jsx';
 import NotFoundPage from './pages/NotFoundPage.jsx';
 import PaymentsPage from './pages/payments/PaymentsPage.jsx';
+import PayoutsPage from './pages/payouts/PayoutsPage.jsx';
+import ReportsPage from './pages/reports/ReportsPage.jsx';
+import StaffPage from './pages/staff/StaffPage.jsx';
+import StaffProfilePage from './pages/staff/StaffProfilePage.jsx';
 import UiShowcasePage from './pages/UiShowcasePage.jsx';
 import ProtectedRoute, { GuestRoute } from './routes/ProtectedRoute.jsx';
 
@@ -44,6 +49,12 @@ export default function App() {
           <Route path="/invoices/new" element={<InvoiceFormPage />} />
           <Route path="/invoices/:id" element={<InvoiceViewPage />} />
           <Route path="/invoices/:id/edit" element={<InvoiceFormPage />} />
+
+          <Route path="/staff" element={<StaffPage />} />
+          <Route path="/staff/:id" element={<StaffProfilePage />} />
+          <Route path="/payouts" element={<PayoutsPage />} />
+          <Route path="/notes" element={<NotesPage />} />
+          <Route path="/reports" element={<ReportsPage />} />
 
           <Route path="/ui" element={<UiShowcasePage />} />
           <Route path="*" element={<NotFoundPage />} />

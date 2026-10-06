@@ -18,7 +18,7 @@ import Textarea from '../ui/Textarea.jsx';
 
 const FORM_ID = 'note-form';
 
-function NoteFormModal({ open, note, onClose, onSubmit, saving }) {
+export function NoteFormModal({ open, note, onClose, onSubmit, saving }) {
   const {
     register,
     handleSubmit,
