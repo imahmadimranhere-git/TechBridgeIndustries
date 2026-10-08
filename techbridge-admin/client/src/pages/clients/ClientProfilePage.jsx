@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import {
+  Award,
   Banknote,
   Briefcase,
   CircleDollarSign,
@@ -33,16 +34,19 @@ import { Card, CardBody, CardHeader } from '../../components/ui/Card.jsx';
 import ConfirmDialog from '../../components/ui/ConfirmDialog.jsx';
 import DateRangeFilter from '../../components/ui/DateRangeFilter.jsx';
 import EmptyState from '../../components/ui/EmptyState.jsx';
+import Input from '../../components/ui/Input.jsx';
 import ProgressBar from '../../components/ui/ProgressBar.jsx';
 import Select from '../../components/ui/Select.jsx';
 import { FullPageSpinner } from '../../components/ui/Spinner.jsx';
 import StatCard from '../../components/ui/StatCard.jsx';
 import Table from '../../components/ui/Table.jsx';
 import Tabs from '../../components/ui/Tabs.jsx';
+import Textarea from '../../components/ui/Textarea.jsx';
 import { useSettings } from '../../context/SettingsContext.jsx';
 import { usePageTitle } from '../../hooks/usePageTitle.js';
 import { rangeParams } from '../../utils/dateRanges.js';
 import { formatDate } from '../../utils/formatDate.js';
+import { toWhatsAppNumber } from '../../utils/whatsapp.js';
 
 const linkClass = 'font-medium text-gray-900 hover:text-brand';
 
@@ -67,11 +71,14 @@ export default function ClientProfilePage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { formatMoney } = useSettings();
+  const { branding, formatMoney } = useSettings();
   const [editOpen, setEditOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [statementRange, setStatementRange] = useState({ range: 'all_time' });
   const [welcomeDealId, setWelcomeDealId] = useState('');
+  // Project completion certificate: which deal, when it was delivered, what was handed over
+  const [completion, setCompletion] = useState({ dealId: '', deliveredOn: '', deliverables: '' });
+  const updateCompletion = (field) => (event) => setCompletion((current) => ({ ...current, [field]: event.target.value }));
 
   const profileQuery = useQuery({ queryKey: ['client', id], queryFn: () => clientsApi.get(id) });
   usePageTitle(profileQuery.data?.client?.name ?? 'Client');
@@ -111,7 +118,16 @@ export default function ClientProfilePage() {
   const refreshProfile = () => queryClient.invalidateQueries({ queryKey: ['client', id] });
   const statementParams = rangeParams(statementRange);
   const statementReady = statementRange.range !== 'custom' || (statementRange.from && statementRange.to);
+  const completedDeals = deals.filter((deal) => deal.status === 'Completed');
+  const completionParams = completion.dealId ? completion : {};
   const location = [client.address, client.city, client.country].filter(Boolean).join(', ');
+
+  // WhatsApp: the client's WhatsApp number, else their phone
+  const whatsappPhone = client.whatsapp || client.phone;
+  const whatsappFor = (what) => ({
+    phone: whatsappPhone,
+    message: `Dear ${client.name}, please find attached your ${what} from ${branding.companyName}.`,
+  });
 
   const dealsTab = (
     <Table
@@ -172,6 +188,7 @@ export default function ClientProfilePage() {
               emailPath={`/payments/${payment._id}/email`}
               emailTitle="Email payment receipt"
               defaultRecipient={client.email}
+              whatsapp={whatsappFor(`payment receipt for ${formatMoney(payment.amount)}`)}
             />
           ),
         },
@@ -211,6 +228,7 @@ export default function ClientProfilePage() {
             emailExtra={statementParams}
             emailTitle="Email client statement"
             defaultRecipient={client.email}
+            whatsapp={whatsappFor('account statement')}
           />
         </CardBody>
       </Card>
@@ -232,8 +250,14 @@ export default function ClientProfilePage() {
             emailExtra={welcomeDealId ? { dealId: welcomeDealId } : {}}
             emailTitle="Email welcome letter"
             defaultRecipient={client.email}
+            whatsapp={whatsappFor('welcome letter')}
             onDone={refreshProfile}
           />
+          {!toWhatsAppNumber(whatsappPhone) && (
+            <p className="text-xs text-gray-500">
+              No WhatsApp or phone number is saved for this client. WhatsApp will ask you to choose the contact. Add a number with Edit to open the chat directly.
+            </p>
+          )}
           <div>
             <h4 className="mb-2 text-xs font-semibold tracking-wide text-gray-500 uppercase">History</h4>
             {welcomeLetters.length === 0 ? (
@@ -256,6 +280,62 @@ export default function ClientProfilePage() {
               </ul>
             )}
           </div>
+        </CardBody>
+      </Card>
+
+      <Card className="lg:col-span-2">
+        <CardHeader
+          icon={Award}
+          title="Project completion certificate"
+          description="Send after delivery: confirms the project is complete and thanks the client. Text is in Settings."
+        />
+        <CardBody className="space-y-4">
+          {completedDeals.length === 0 ? (
+            <p className="rounded-lg border border-dashed border-gray-300 px-3 py-4 text-sm text-gray-500">
+              No completed deal yet. When a project is delivered, open the deal, set its status to Completed, then come back here.
+            </p>
+          ) : (
+            <>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <Select
+                  label="Completed deal"
+                  placeholder="Choose a deal"
+                  options={completedDeals.map((deal) => ({ value: deal._id, label: deal.title }))}
+                  value={completion.dealId}
+                  onChange={updateCompletion('dealId')}
+                />
+                <Input
+                  label="Delivered on"
+                  type="date"
+                  hint="Leave empty for today."
+                  value={completion.deliveredOn}
+                  onChange={updateCompletion('deliveredOn')}
+                />
+              </div>
+              <Textarea
+                label="What was delivered (optional)"
+                rows={4}
+                placeholder={'Website (desktop and mobile)\nAdmin panel\nSource code and documentation'}
+                hint="One item per line. Leave empty for a general confirmation."
+                value={completion.deliverables}
+                onChange={updateCompletion('deliverables')}
+              />
+              <DocumentActions
+                disabled={!completion.dealId}
+                pdfPath={`/clients/${client._id}/completion-certificate`}
+                params={completionParams}
+                emailPath={`/clients/${client._id}/completion-certificate/email`}
+                emailExtra={completionParams}
+                emailTitle="Email project completion certificate"
+                defaultRecipient={client.email}
+                whatsapp={{
+                  phone: whatsappPhone,
+                  message: `Dear ${client.name}, we are delighted to share that your project has been successfully delivered. Please find attached your Project Completion Certificate. Thank you for choosing ${branding.companyName}.`,
+                }}
+              />
+              {!completion.dealId && <p className="text-xs text-gray-500">Choose a deal to preview or send the certificate.</p>}
+            </>
+          )}
         </CardBody>
       </Card>
     </div>
@@ -290,7 +370,7 @@ export default function ClientProfilePage() {
           <ContactItem icon={Phone} href={client.phone ? `tel:${client.phone}` : undefined}>
             {client.phone}
           </ContactItem>
-          <ContactItem icon={MessageCircle} href={client.whatsapp ? `https://wa.me/${client.whatsapp.replace(/\D/g, '')}` : undefined}>
+          <ContactItem icon={MessageCircle} href={client.whatsapp ? `https://wa.me/${toWhatsAppNumber(client.whatsapp)}` : undefined}>
             {client.whatsapp}
           </ContactItem>
           <ContactItem icon={Globe} href={client.website ? (client.website.startsWith('http') ? client.website : `https://${client.website}`) : undefined}>

@@ -7,12 +7,25 @@ export const DOCUMENT_TYPES = [
   { key: 'PaymentReceipt', label: 'Payment receipt' },
   { key: 'ClientStatement', label: 'Client statement' },
   { key: 'WelcomeLetter', label: 'Welcome letter' },
+  { key: 'ProjectCompletion', label: 'Project completion certificate' },
   { key: 'PayoutSlip', label: 'Commission payout slip' },
   { key: 'CommissionStatement', label: 'Commission statement' },
   { key: 'FinancialReport', label: 'Financial report' },
 ];
 
 export const LETTER_PLACEHOLDERS = ['{client_name}', '{client_company}', '{date}', '{company_name}', '{contact_person}', '{team}', '{deal_title}', '{deal_amount}'];
+
+export const COMPLETION_PLACEHOLDERS = [
+  '{client_name}',
+  '{client_company}',
+  '{company_name}',
+  '{team}',
+  '{deal_title}',
+  '{deal_amount}',
+  '{start_date}',
+  '{completion_date}',
+  '{duration}',
+];
 
 const hex = (label) => z.string().trim().regex(HEX_COLOR, `${label} must look like #1d4ed8`);
 const wholeNumber = (label, min, max) =>
@@ -65,6 +78,9 @@ export const settingsFormSchema = z.object({
 
   welcomeLetterTemplate: requiredText(10000, 'Welcome letter template'),
   servicesText: text(5000, 'Services'),
+
+  // Empty = the built-in thank-you text is used
+  completionLetterTemplate: text(10000, 'Completion letter template'),
 });
 
 /** API response -> form values */
@@ -113,6 +129,7 @@ export function settingsToForm({ settings, nextInvoiceNumber }) {
     },
     welcomeLetterTemplate: settings.welcomeLetterTemplate ?? '',
     servicesText: (settings.servicesList ?? []).join('\n'),
+    completionLetterTemplate: settings.completionLetterTemplate ?? '',
   };
 }
 

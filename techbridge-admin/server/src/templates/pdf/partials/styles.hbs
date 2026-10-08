@@ -241,3 +241,49 @@ table.data tr.row-strong td { font-weight: 700; background: var(--brand-soft) !i
 .contact-card { padding-bottom: 6px; border-bottom: 1px dashed var(--border); }
 .contact-card:last-child { border-bottom: 0; padding-bottom: 0; }
 .contact-card__line { display: flex; align-items: center; gap: 5px; font-size: 8.5pt; color: var(--muted); }
+
+/* ---------- Project completion certificate ---------- */
+.certificate {
+  position: relative;
+  margin: 2px 0 14px;
+  padding: 5px;
+  border: 2px solid var(--brand);
+  border-radius: 12px;
+}
+.certificate__inner {
+  position: relative;
+  padding: 18px 28px 16px;
+  border: 1px solid color-mix(in srgb, var(--brand) 35%, white);
+  border-radius: 8px;
+  text-align: center;
+  background:
+    radial-gradient(circle at top left, var(--brand-soft), transparent 45%),
+    radial-gradient(circle at bottom right, var(--brand-soft), transparent 45%);
+}
+.certificate__seal { display: block; width: 52px; height: 52px; margin: 0 auto 4px; color: var(--brand); }
+.certificate__eyebrow { font-size: 7.5pt; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; }
+.certificate__title { margin-top: 4px; font-size: 19pt; letter-spacing: 0.5px; }
+.certificate__rule { width: 90px; height: 2px; margin: 9px auto 11px; background: var(--brand-2); border-radius: 2px; }
+.certificate__lead { margin: 0; font-size: 9.5pt; color: var(--muted); }
+.certificate__project { margin: 3px 0 6px; font-size: 15pt; font-weight: 700; color: var(--text); }
+.certificate__client { margin: 3px 0 6px; font-size: 13pt; font-weight: 700; color: var(--brand); }
+.certificate__stamp {
+  position: absolute;
+  top: 16px;
+  right: 18px;
+  padding: 4px 12px;
+  border: 3px double var(--success);
+  border-radius: 8px;
+  color: var(--success);
+  font-size: 13pt;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  transform: rotate(-12deg);
+  opacity: 0.85;
+}
+.deliverables { list-style: none; padding: 0; margin: 2px 0 0; }
+.deliverables li { display: flex; align-items: flex-start; gap: 6px; padding: 2px 0; font-size: 9pt; break-inside: avoid; }
+.deliverables li .icon { flex: none; margin-top: 3px; color: var(--success); }
+.contacts--row { grid-template-columns: repeat(3, 1fr); }
+.contacts--row .contact-card { border-bottom: 0; padding-bottom: 0; font-size: 8.5pt; }

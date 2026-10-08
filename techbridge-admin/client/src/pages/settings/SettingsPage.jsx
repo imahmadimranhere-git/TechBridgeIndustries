@@ -3,7 +3,7 @@ import { Controller, useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
-import { Building2, FileCheck2, FileSignature, Hash, Landmark, Mail, Palette, Save, Send, Stamp } from 'lucide-react';
+import { Award, Building2, FileCheck2, FileSignature, Hash, Landmark, Mail, Palette, Save, Send, Stamp } from 'lucide-react';
 import { settingsApi, usersApi } from '../../api/endpoints.js';
 import PageHeader from '../../components/layout/PageHeader.jsx';
 import CompanyStampPreview from '../../components/stamps/CompanyStampPreview.jsx';
@@ -17,7 +17,7 @@ import Tabs from '../../components/ui/Tabs.jsx';
 import Textarea from '../../components/ui/Textarea.jsx';
 import { useSettings } from '../../context/SettingsContext.jsx';
 import { usePageTitle } from '../../hooks/usePageTitle.js';
-import { DOCUMENT_TYPES, LETTER_PLACEHOLDERS, settingsFormSchema, settingsPatch, settingsToForm } from '../../schemas/settingsSchemas.js';
+import { COMPLETION_PLACEHOLDERS, DOCUMENT_TYPES, LETTER_PLACEHOLDERS, settingsFormSchema, settingsPatch, settingsToForm } from '../../schemas/settingsSchemas.js';
 import { contrastText, HEX_COLOR } from '../../utils/color.js';
 import { applyServerErrors } from '../../utils/formErrors.js';
 import { formatMoney } from '../../utils/formatMoney.js';
@@ -31,6 +31,7 @@ const TAB_KEYS = {
   invoicing: ['invoicePrefix', 'nextInvoiceNumber', 'defaultTaxPercent', 'defaultDueDays', 'invoiceTerms', 'footerText'],
   bank: ['bankDetails'],
   welcome: ['welcomeLetterTemplate', 'servicesText'],
+  completion: ['completionLetterTemplate'],
 };
 
 const STAMP_MODE_OPTIONS = [
@@ -431,6 +432,39 @@ export default function SettingsPage() {
     </div>
   );
 
+  const completionTab = (
+    <div className="space-y-6">
+      <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 text-sm text-gray-600">
+        The <span className="font-medium text-gray-900">Project Completion Certificate</span> is sent to the client after a project is delivered. It
+        confirms the delivery, shows a project summary and the founders&apos; contacts, and ends with this thank-you note. Create it from a
+        client&apos;s profile: Documents tab (the deal must be marked as Completed).
+      </div>
+      <div>
+        <p className="mb-2 text-sm text-gray-500">Click a placeholder to add it at the end of the note. It is replaced with real details in the PDF.</p>
+        <div className="flex flex-wrap gap-2">
+          {COMPLETION_PLACEHOLDERS.map((placeholder) => (
+            <button
+              key={placeholder}
+              type="button"
+              onClick={() => setValue('completionLetterTemplate', `${getValues('completionLetterTemplate')} ${placeholder}`, { shouldDirty: true })}
+              className="rounded-md border border-gray-200 bg-gray-50 px-2 py-1 font-mono text-xs text-gray-700 hover:border-brand hover:text-brand focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:outline-none"
+            >
+              {placeholder}
+            </button>
+          ))}
+        </div>
+      </div>
+      <Textarea
+        label="Thank-you note on the certificate"
+        rows={14}
+        hint="Leave an empty line between paragraphs. If you empty this box, the built-in text is used."
+        error={errors.completionLetterTemplate?.message}
+        {...register('completionLetterTemplate')}
+      />
+      <SaveBar onSave={() => saveTab('completion')} saving={saving('completion')} />
+    </div>
+  );
+
   const emailTab = (
     <div className="max-w-xl space-y-4">
       <p className="text-sm text-gray-600">
@@ -460,6 +494,7 @@ export default function SettingsPage() {
               { label: 'Invoicing', icon: Hash, content: invoicingTab },
               { label: 'Bank details', icon: Landmark, content: bankTab },
               { label: 'Welcome letter', icon: FileSignature, content: welcomeTab },
+              { label: 'Completion certificate', icon: Award, content: completionTab },
               { label: 'Email', icon: Mail, content: emailTab },
             ]}
           />

@@ -1,6 +1,7 @@
-import { format } from 'date-fns';
+import { differenceInCalendarDays, format } from 'date-fns';
 import mongoose from 'mongoose';
 import { DEAL_STATUS, DOCUMENT_TYPE, WELCOME_LETTER_ACTIONS } from '../config/constants.js';
+import { DEFAULT_COMPLETION_LETTER } from '../config/defaultSettings.js';
 import { Client, CommissionPayout, Deal, Invoice, Payment, Staff, WelcomeLetterLog } from '../models/index.js';
 import ApiError from '../utils/ApiError.js';
 import { dateMatch, resolveDateRange } from '../utils/dateRanges.js';
@@ -495,6 +496,127 @@ export function recordWelcomeLetter({
     signedBy: user?._id ?? null,
     sentBy: user?._id ?? null,
   });
+}
+
+/* ------------------------------------------------------------------ */
+/* 8. Project completion certificate (sent after delivery)             */
+/* ------------------------------------------------------------------ */
+
+const COMPLETED_STATUS = DEAL_STATUS.COMPLETED ?? 'Completed';
+
+// The new type is added to config/constants.js by hand (see PEHLE-YEH-PARHEIN.txt, step 2)
+function completionDocumentType() {
+  const type = DOCUMENT_TYPE.PROJECT_COMPLETION;
+  if (!type) {
+    throw new Error(
+      'DOCUMENT_TYPE.PROJECT_COMPLETION is missing in server/src/config/constants.js. Add it as explained in PEHLE-YEH-PARHEIN.txt (step 2).'
+    );
+  }
+  return type;
+}
+
+// 45 days -> "6 weeks", 120 days -> "4 months"
+function describeDuration(from, to) {
+  if (!from || !to) return '';
+  const days = Math.max(differenceInCalendarDays(new Date(to), new Date(from)), 0) + 1;
+  if (days < 14) return `${days} ${days === 1 ? 'day' : 'days'}`;
+  if (days < 60) return `${Math.round(days / 7)} weeks`;
+  const months = Math.round(days / 30);
+  return `${months} months`;
+}
+
+export async function completionCertificatePdf(clientId, { dealId, deliveredOn, deliverables = [] } = {}, user) {
+  const documentType = completionDocumentType();
+
+  const client = await Client.findById(clientId).lean();
+  if (!client) throw ApiError.notFound('Client not found');
+
+  const deal = await Deal.findOne({ _id: dealId, client: client._id }).lean();
+  if (!deal) throw ApiError.badRequest('Selected deal does not belong to this client', { dealId: 'Choose a deal' });
+  if (deal.status !== COMPLETED_STATUS) {
+    throw ApiError.badRequest(`Mark "${deal.title}" as ${COMPLETED_STATUS} first, then create the certificate.`, {
+      dealId: `Deal status is ${deal.status}`,
+    });
+  }
+
+  const [settings, financial] = await Promise.all([
+    getSettings(),
+    FinanceService.getDealFinancial(deal._id).catch(() => null),
+  ]);
+  const contacts = await getLeadershipContacts(user?._id ?? settings.defaultSignatoryId);
+  const primary = contacts[0];
+
+  const deliveryDate = deliveredOn ?? deal.completedAt ?? new Date();
+  const duration = describeDuration(deal.startDate, deliveryDate);
+  const certificateNumber = shortRef('PCC', deal._id);
+  const money = (value) => formatMoney(value ?? 0, { symbol: settings.currencySymbol });
+
+  const paragraphs = fillLetterTemplate(settings.completionLetterTemplate || DEFAULT_COMPLETION_LETTER, {
+    client_name: client.name,
+    client_company: client.companyName || client.name,
+    date: format(new Date(), 'dd MMMM yyyy'),
+    company_name: settings.companyName,
+    contact_person: primary ? withRole(primary) : settings.companyName,
+    team: contacts.length ? joinNames(contacts.map(withRole)) : settings.companyName,
+    deal_title: deal.title,
+    deal_amount: money(deal.dealAmount),
+    start_date: deal.startDate ? format(new Date(deal.startDate), 'dd MMMM yyyy') : '',
+    completion_date: format(new Date(deliveryDate), 'dd MMMM yyyy'),
+    duration: duration || 'the agreed time',
+  });
+
+  const view = clientView(client);
+  const signedBy = user?._id;
+  const remaining = financial?.remaining ?? 0;
+
+  const result = await renderDocument({
+    template: 'project-completion',
+    documentType,
+    signedBy,
+    documentDate: deliveryDate,
+    data: {
+      title: `Project Completion Certificate ${deal.title}`,
+      certificateNumber,
+      client: view,
+      clientDisplayName: view.companyName || view.name,
+      deliveredOn: deliveryDate,
+      paragraphs,
+      deliverables,
+      // Client-facing summary: no commission
+      deal: {
+        title: deal.title,
+        dealAmount: deal.dealAmount,
+        startDate: deal.startDate,
+        duration,
+        received: financial?.received ?? null,
+        remaining,
+        settled: remaining <= 0,
+      },
+      contacts,
+    },
+    verify: () =>
+      ensureVerification({
+        documentType,
+        documentId: deal._id,
+        snapshot: {
+          documentNumber: certificateNumber,
+          partyName: view.companyName || view.name,
+          documentDate: deliveryDate,
+          status: 'Delivered',
+        },
+        signedBy,
+        issuedBy: user?._id,
+      }),
+  });
+
+  return {
+    ...result,
+    filename: `Project-Completion-Certificate-${safeFileName(deal.title)}.pdf`,
+    record: client,
+    deal,
+    number: certificateNumber,
+    deliveredOn: deliveryDate,
+  };
 }
 
 /* ------------------------------------------------------------------ */

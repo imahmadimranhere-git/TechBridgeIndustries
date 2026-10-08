@@ -1,0 +1,88 @@
+<section class="certificate avoid-break">
+  <div class="certificate__inner">
+    <div class="certificate__stamp">Delivered</div>
+
+    <svg class="certificate__seal" viewBox="0 0 64 64" aria-hidden="true">
+      <circle cx="32" cy="26" r="20" fill="none" stroke="currentColor" stroke-width="2.5"></circle>
+      <circle cx="32" cy="26" r="14.5" fill="currentColor" opacity="0.12"></circle>
+      <path d="M24.5 26.5l5 5 10-10.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>
+      <path d="M21 42l-5 16 8-4 4 7 4-15M43 42l5 16-8-4-4 7-4-15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"></path>
+    </svg>
+
+    <div class="certificate__eyebrow">Certificate No. {{certificateNumber}}</div>
+    <h1 class="certificate__title">Certificate of Project Completion</h1>
+    <div class="certificate__rule"></div>
+
+    <p class="certificate__lead">This is to certify that the project</p>
+    <div class="certificate__project">{{deal.title}}</div>
+    <p class="certificate__lead">has been successfully completed and delivered to</p>
+    <div class="certificate__client">{{clientDisplayName}}</div>
+    <p class="certificate__lead">on <strong>{{date deliveredOn "dd MMMM yyyy"}}</strong></p>
+  </div>
+</section>
+
+<div class="grid-2">
+  <div class="panel avoid-break">
+    <div class="panel__label">{{icon "file-text"}} Project summary</div>
+    <table class="kv">
+      <tr><td>Project</td><td>{{deal.title}}</td></tr>
+      <tr><td>Client</td><td>{{clientDisplayName}}</td></tr>
+      {{#if deal.startDate}}<tr><td>Started on</td><td>{{date deal.startDate}}</td></tr>{{/if}}
+      <tr><td>Delivered on</td><td>{{date deliveredOn}}</td></tr>
+      {{#if deal.duration}}<tr><td>Duration</td><td>{{deal.duration}}</td></tr>{{/if}}
+      <tr><td>Project value</td><td>{{money deal.dealAmount}}</td></tr>
+      <tr>
+        <td>Account status</td>
+        <td>
+          {{#if deal.settled}}
+            <span class="badge badge--success">Settled in full</span>
+          {{else}}
+            <span class="badge badge--warning">Balance {{money deal.remaining}}</span>
+          {{/if}}
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="panel panel--soft avoid-break">
+    <div class="panel__label">{{icon "check-circle"}} {{#if deliverables.length}}Delivered to you{{else}}Delivery confirmation{{/if}}</div>
+    {{#if deliverables.length}}
+      <ul class="deliverables">
+        {{#each deliverables}}
+          <li>{{icon "check-circle"}}<span>{{this}}</span></li>
+        {{/each}}
+      </ul>
+    {{else}}
+      <ul class="deliverables">
+        <li>{{icon "check-circle"}}<span>All agreed work completed</span></li>
+        <li>{{icon "check-circle"}}<span>Final version handed over</span></li>
+        <li>{{icon "check-circle"}}<span>Ongoing support available on request</span></li>
+      </ul>
+    {{/if}}
+  </div>
+</div>
+
+<h2 class="section-title">A note of thanks</h2>
+<div class="letter">
+  {{#each paragraphs}}
+    <p>{{{this}}}</p>
+  {{/each}}
+</div>
+
+{{#if contacts.length}}
+  <div class="panel avoid-break" style="margin-top:6px;">
+    <div class="panel__label">{{icon "phone"}} Stay in touch</div>
+    <div class="contacts contacts--row">
+      {{#each contacts}}
+        <div class="contact-card">
+          <div class="bold">{{name}}</div>
+          {{#if designation}}<div>{{designation}}</div>{{/if}}
+          {{#if phone}}<div class="contact-card__line">{{icon "phone"}}<span>{{phone}}</span></div>{{/if}}
+          {{#if email}}<div class="contact-card__line">{{icon "mail"}}<span>{{email}}</span></div>{{/if}}
+        </div>
+      {{/each}}
+    </div>
+  </div>
+{{/if}}
+
+{{> signatory}}

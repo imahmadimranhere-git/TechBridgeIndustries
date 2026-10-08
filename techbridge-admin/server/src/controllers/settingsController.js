@@ -1,3 +1,4 @@
+import { DEFAULT_COMPLETION_LETTER } from '../config/defaultSettings.js';
 import { removeUpload } from '../middleware/upload.js';
 import { User } from '../models/index.js';
 import * as InvoiceService from '../services/InvoiceService.js';
@@ -11,7 +12,12 @@ const withoutUndefined = (object) =>
   Object.fromEntries(Object.entries(object).filter(([, value]) => value !== undefined));
 
 async function settingsResponse() {
-  const settings = await getSettings();
+  const stored = await getSettings();
+  // Settings saved before this feature have no completion text yet: show the built-in one
+  const settings = {
+    ...stored,
+    completionLetterTemplate: stored.completionLetterTemplate || DEFAULT_COMPLETION_LETTER,
+  };
   return {
     settings,
     logoUrl: toUploadUrl(settings.logoPath),

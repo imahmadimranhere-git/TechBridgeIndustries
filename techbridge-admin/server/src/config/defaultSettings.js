@@ -13,6 +13,19 @@ Below you will find an overview of our services and our bank details for payment
 
 We look forward to building something great together.`;
 
+// Thank-you text printed on the Project Completion Certificate (sent after delivery)
+export const DEFAULT_COMPLETION_LETTER = `Dear {client_name},
+
+It is with great pleasure that we confirm the successful completion and delivery of {deal_title} on {completion_date}. On behalf of everyone at {company_name}, thank you for the trust you placed in us and for being such a wonderful partner throughout this journey.
+
+Working with {client_company} has been a true privilege. Your ideas, feedback and patience helped shape the final result, and we are proud of what we have built together.
+
+Our relationship does not end at delivery. Whenever you need support, updates or new features, we are only one message away. You can reach our founders directly: {team}.
+
+We would be honoured to work with you again on your next idea. If you are happy with our work, we would be grateful if you could share your experience or recommend us to others.
+
+With sincere thanks and best wishes for your continued success.`;
+
 export const DEFAULT_SERVICES = [
   'Custom Web Development',
   'Mobile App Development (Android & iOS)',
@@ -75,6 +88,9 @@ export const DEFAULT_SETTINGS = Object.freeze({
   // Welcome letter
   welcomeLetterTemplate: DEFAULT_WELCOME_LETTER,
   servicesList: DEFAULT_SERVICES,
+
+  // Project completion certificate
+  completionLetterTemplate: DEFAULT_COMPLETION_LETTER,
 });
 
 // Safe to show on public pages (login, verify). Never add bank or internal keys here.

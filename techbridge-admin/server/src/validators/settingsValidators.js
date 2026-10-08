@@ -62,5 +62,8 @@ export const settingsUpdateSchema = z
     // Welcome letter
     welcomeLetterTemplate: requiredText(10000, 'Welcome letter template'),
     servicesList: z.array(requiredText(150, 'Service')).max(30, 'Add at most 30 services'),
+
+    // Project completion certificate (empty = use the built-in text)
+    completionLetterTemplate: optionalText(10000, 'Completion letter template'),
   })
   .partial();

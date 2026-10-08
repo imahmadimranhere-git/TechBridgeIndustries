@@ -245,6 +245,45 @@ export async function emailWelcomeLetter(clientId, input, user) {
 }
 
 /* ------------------------------------------------------------------ */
+/* Project completion certificate                                      */
+/* ------------------------------------------------------------------ */
+
+export async function emailCompletionCertificate(clientId, input, user) {
+  const document = await DocumentService.completionCertificatePdf(
+    clientId,
+    { dealId: input.dealId, deliveredOn: input.deliveredOn, deliverables: input.deliverables },
+    user
+  );
+  const client = document.record;
+  const { companyName } = await getSettings();
+
+  return deliver({
+    to: recipients(input.to, client.email, 'This client'),
+    cc: input.cc,
+    subject: input.subject || `Your project "${document.deal.title}" has been delivered - ${companyName}`,
+    document,
+    user,
+    context: {
+      heading: 'Your project has been delivered',
+      greetingName: client.name,
+      intro: [
+        `We are delighted to confirm that ${document.deal.title} has been successfully completed and delivered.`,
+        `Thank you for trusting ${companyName} with your project. Your Project Completion Certificate is attached as a record of this milestone.`,
+        'Whenever you need support, updates or a new project, we are only one message away.',
+      ],
+      message: input.message,
+      rows: [
+        { label: 'Project', value: document.deal.title },
+        { label: 'Delivered on', value: formatDay(document.deliveredOn) },
+        { label: 'Certificate number', value: document.number },
+      ],
+      verification: verificationContext(document.verificationCode),
+      attachmentName: document.filename,
+    },
+  });
+}
+
+/* ------------------------------------------------------------------ */
 /* Commission payout slip                                              */
 /* ------------------------------------------------------------------ */
 
